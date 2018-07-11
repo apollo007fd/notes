@@ -29,12 +29,15 @@
 
 2. #### 从GitHub下载到本地的目录,再同步到码云:
 
-
-   ​	先给目录添加码云的远程代码库, 参考step1
+   	先给目录添加码云的远程代码库, 参考step1
    	git remote add gitee git@gitee.com:hongbozhang/reponame.git
    	推送到码云, 参考step2
 
+​	也可以在Gitee个人主页使用"从Github导入项目"功能, 前提是Gitee和Github账号已经绑定.
 
+![1531288773409](assets/1531288773409.png)
+
+​	
 
 3. #### 本地目录同步到码云:
 
