@@ -39,6 +39,7 @@
 3. #### 本地目录同步到码云:
 
    ​    	在码云上新建和本地目录local_directory同名的目录
+
       	cd local_directory
 
    ​    	git init
