@@ -38,12 +38,15 @@
 
 3. #### 本地目录同步到码云:
 
-
    ​    	在码云上新建和本地目录local_directory同名的目录
       	cd local_directory
-       	git init
+
+   ​    	git init
+
       	git add -A
-           git commit -m "your comment"
+
+   ​        git commit -m "your comment"
+
      	git push gitee master
 
 
@@ -53,17 +56,28 @@
 #### step1.给目录添加远程代码仓库, 关联码云:
 
 ​    		cd 到git目录
-    		git init
-    		git remote add gitee git@gitee.com:hongbozhang/目录名.git
-    		git remote -v   //查看远程库信息:
+
+​    		git init
+
+​    		git remote add gitee git@gitee.com:hongbozhang/目录名.git
+
+​    		git remote -v   //查看远程库信息:
+
+
 
 ####            或者新建一个空目录:
 
 ​    		mkdir folder_name
-    		cd folder_name
-    		git init
-    		git add file.xxx  (或者用git add -A添加所有(有变化)文件)
-    		git commit -m "your comment"
+
+​    		cd folder_name
+
+​    		git init
+
+​    		git add file.xxx  (或者用git add -A添加所有(有变化)文件)
+
+​    		git commit -m "your comment"
+
+
 
 #### step2. 同步到码云:
 
