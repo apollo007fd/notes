@@ -10,5 +10,5 @@ tensorflow学习资料收集
 
 [github TensorFlow-Examples](https://github.com/aymericdamien/TensorFlow-Examples)
 
-
+[Awesome-TensorFlow-Chinese](https://github.com/fendouai/Awesome-TensorFlow-Chinese/)
 
