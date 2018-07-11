@@ -1,0 +1,47 @@
+【题目】
+给定一个无序单链表的头节点head,实现单链表的选择排序
+要求：额外空间复杂度为O(1)
+
+【思路】
+（要求额外空间复杂度为O(1)，则不能将链表的节点值实现存入一个数组中，再对数组排序。）
+不需要改变链表的next指针，只需要交换链表各个节点的值既可。
+
+【代码】
+public class Node {
+    //左书第二章，单链表结点的定义
+    public int val;
+    public Node next;
+
+    public Node(int data){
+        this.val = data;
+    }
+}
+
+
+// 单链表的选择排序
+    public static Node listSelectionSort(Node head){
+        // 无需改变链表节点的next指针，只需交换值即可
+        Node curmin = head;
+        Node curposition = head;
+        while(curposition != null){
+        
+            curmin = curposition;
+            Node cur = curmin.next;
+            
+            // select current minmal node value
+            while (cur != null){
+                if(cur.val < curmin.val){
+                    curmin = cur;
+                }
+                cur = cur.next;
+            }
+            
+            // exchange value
+            int temp = curposition.val;
+            curposition.val = curmin.val;
+            curmin.val = temp;
+            curposition = curposition.next;
+        }
+
+        return head;
+    }

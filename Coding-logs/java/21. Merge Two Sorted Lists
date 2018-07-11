@@ -1,0 +1,79 @@
+【Question】
+Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the 
+first two lists.
+
+【solution】
+solution-1: recursive solution
+solution-2: normal solution
+
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+
+[solution-1]
+
+public class Solution {
+    
+	public ListNode Merge(ListNode list1, ListNode list2){
+		if(list1 == null) return list2;
+		if(list2 == null) return list1;
+		if(list1.val < list2.val){
+			list1.next = Merge(list1.next, list2);
+			return list1;
+		} else{
+			list2.next = Merge(list1, list2.next);
+			return list2;
+		}
+	}
+}
+
+[solution-2]
+public class Solution {
+    public ListNode Merge(ListNode list1,ListNode list2) {
+        if(list1 == null )
+            return list2;
+        if(list2 == null)
+            return list1;
+         
+        ListNode newhead = null;
+        ListNode precur = null;
+         
+        while(list1 != null && list2 != null){
+            if(list1.val < list2.val){
+                if(newhead == null){
+                    newhead = list1;
+                    precur = newhead;
+                }else{
+                    precur.next = list1;
+                    precur = precur.next;
+                }
+                list1 = list1.next;
+            }
+            else{
+                if(newhead == null){
+                    newhead = list2;
+                    precur  = newhead;
+                }else{
+                    precur.next = list2;
+                    precur = precur.next;
+                }
+                list2 = list2.next;
+            }
+             
+        }
+         
+        if(list1 != null)
+            precur.next = list1;
+         
+        if(list2 != null)
+            precur.next = list2;
+         
+        return newhead;
+    }
+}
