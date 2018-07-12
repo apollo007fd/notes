@@ -1,0 +1,105 @@
+
+题目描述：
+https://www.nowcoder.com/practice/fc533c45b73a41b0b44ccba763f866ef?tpId=13&&tqId=11209&rp=1&ru=/activity/oj&qru=/ta/coding-interviews/question-ranking
+在一个排序的链表中，存在重复的节点，请删除该链表中重复的节点，重复的节点不保留，返回链表头指针。例如，，链表1->2->3->3->4->4->5 处理后为 1->2->5
+
+【解1】使用HashMap记录每个节点是否重复出现，时间复杂度为O(N)，空间复杂度为O(N)
+【解2】每次找到一个不重复的节点，加入新的链表末尾，最后返回新链表的头指针，时间复杂度O(N)，空间复杂度O(1)
+import java.util.*;
+ 
+/*
+ public class ListNode {
+    int val;
+    ListNode next = null;
+ 
+    ListNode(int val) {
+        this.val = val;
+    }
+}
+*/
+public class Solution {
+    public ListNode deleteDuplication(ListNode pHead)
+    {
+        // 解法1：使用hashMap记录个数
+        if(pHead==null)
+            return pHead;
+        HashMap<Integer, Boolean> map = new HashMap<Integer, Boolean>();
+        ListNode cur = pHead;
+        while(cur != null){
+            if(map.containsKey(cur.val) == false){
+                map.put(cur.val, true);
+            }else{
+                map.put(cur.val, false);
+            }
+            cur = cur.next;
+        }
+         
+        Set<Integer> set = map.keySet();
+        boolean isfst = true;
+        ListNode pre = pHead;
+        for (int temp : set){
+            if (map.get(temp) == true){
+                if(isfst){
+                    pHead.val = temp;
+                    isfst = false;
+                }
+                else{
+                    pre.next.val = temp;
+                    pre = pre.next;
+                }
+            }
+         
+        }
+        if(isfst) // 链表中只含有重复节点
+            return null;
+        else     // 链表含有不重复的节点
+            pre.next = null;
+        return pHead;
+    }
+}
+
+import java.util.*;
+ 
+/*
+ public class ListNode {
+    int val;
+    ListNode next = null;
+ 
+    ListNode(int val) {
+        this.val = val;
+    }
+}
+*/
+public class Solution {
+    public ListNode deleteDuplication(ListNode pHead)
+    {
+        // 解法2：每次找一个不重复的元素，加入链表
+        if(pHead==null)
+            return pHead;
+        ListNode newhead = new ListNode(1);
+        ListNode index = newhead;
+        ListNode p = pHead;
+        boolean rept = false;
+         
+        while(p!=null){
+            rept = false;
+            while(p.next!=null && p.val == p.next.val){
+                rept = true;
+                p = p.next;
+            }
+            if(rept == false){
+                index.next = new ListNode(p.val);
+                index = index.next;
+                p = p.next;
+            }else{
+                if(p.next == null){
+                    break;
+                }else{
+                    p = p.next;
+                }   
+            }
+        }
+         
+        return newhead.next;
+    }
+}
