@@ -59,14 +59,14 @@ biases = {
     'b2': tf.Variable(tf.random_normal([n_hidden_2])),
     'out': tf.Variable(tf.random_normal([n_classes]))
 }
-## 定义网络输入, 网络输出的占位符
+## 定义网络输入,输出的占位符
 X = tf.placeholder(tf.float32, [None, num_input])
 Y = tf.placeholder(tf.float32, [None, n_classes])
 ```
 
 
 ```python
-## 构造函数用来创建神经网络结构,也就是一个计算图
+## 用函数用来构建神经网络结构,也就是一个计算图,返回输出层
 def neural_net(x):
     layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
     layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
@@ -88,14 +88,14 @@ loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, 
 
 
 ```python
-## 定义优化器, 定义优化目标
+## 定义优化器, 指定优化目标
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_op = optimizer.minimize(loss_op)
 ```
 
 
 ```python
-## 求测试准确率
+## 计算测试准确率
 correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(Y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, dtype=tf.float32))
 ```
