@@ -1,6 +1,6 @@
 
 Build a convolutional neural network on MNIST dataset
-![image.png](attachment:image.png)
+![image.png](https://camo.githubusercontent.com/afc8cecd033ab300799ceb2bf3b593efa3bda2b7/687474703a2f2f706572736f6e616c2e69652e6375686b2e6564752e686b2f7e63636c6f792f70726f6a6563745f7461726765745f636f64652f696d616765732f666967332e706e67)
 
 
 ```python
