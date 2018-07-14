@@ -26,6 +26,12 @@
 
 
 
+### links
+
+W3Cschool:  https://www.w3cschool.cn/tensorflow_python/tensorflow_python-xp3r2dl5.html
+
+
+
 ## Tensorflow学习资料收集
 
 [一个台湾人写的 tensorflow 學習筆記 记录30天的学习过程, 在第30天给出了入门建议](https://ithelp.ithome.com.tw/users/20103494/ironman/1231)

@@ -498,3 +498,27 @@ tf.nn.max_pool(value, ksize, strides, padding, data_format='NHWC', name=None)
 
 
 
+## tf.estimator
+
+tf.estimator.ModeKeys.PREDICT
+
+tf.estimator.EstimatorSpec()
+
+
+
+## tf.layers
+
+
+
+
+
+## 几种损失函数
+
+tf.nn.sparse_softmax_cross_entropy_with_logits()
+
+tf.nn.softmax_cross_entropy_with_logits()
+
+
+
+
+
