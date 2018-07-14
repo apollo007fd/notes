@@ -40,3 +40,22 @@
 
 
 
+## 设置使用GPU
+
+### 设置gpu按需分配
+
+当程序执行完毕后, gpu资源会被释放:
+
+```python
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+```
+
+### 固定指定GPU
+
+```PYTHON
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+```
+
