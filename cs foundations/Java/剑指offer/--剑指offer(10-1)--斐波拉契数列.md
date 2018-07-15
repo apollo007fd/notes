@@ -8,7 +8,7 @@ f(n)  = 0 , n=0
 
 ​           1,  n=1
 
-​            f(n-1) + f(n-2), n>1
+​           f(n-1) + f(n-2), n>1
 
 
 
@@ -26,6 +26,8 @@ public class Solution {
     }
 }
 ```
+
+o(n)
 
 
 
@@ -49,3 +51,10 @@ public class Solution {
 }
 ```
 
+o(n)
+
+
+
+## $O(log(n))$算法
+
+矩阵乘法
