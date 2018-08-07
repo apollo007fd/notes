@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<!-- saved from url=(0042)https://jdata.jd.com/html/detail.html?id=1 -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>JDATA竞赛详情页</title>
+  <link rel="stylesheet" type="text/css" href="./JDATA竞赛详情页_files/fonts.css">
+  <link rel="stylesheet" type="text/css" href="./JDATA竞赛详情页_files/jcrop.css">
+  <link rel="stylesheet" type="text/css" href="./JDATA竞赛详情页_files/detail.css">
+  <link rel="stylesheet" type="text/css" href="./JDATA竞赛详情页_files/detail.part2.css">
+  <link rel="icon" href="https://jdata.jd.com/favicon.ico" type="image/x-icon">
+  <script type="text/javascript" async="" src="./JDATA竞赛详情页_files/joya.js.下载"></script><script type="text/javascript" src="./JDATA竞赛详情页_files/jquery.min.js.下载"></script><style type="text/css" abt="234"></style>
+  <script type="text/javascript" src="./JDATA竞赛详情页_files/header.js.下载"></script>
+  <script type="text/javascript" src="./JDATA竞赛详情页_files/clipboard.min.js.下载"></script>
+<script>//console.log('a')
+</script><script>//remove 17173 video ad
+doAdblock();
+function doAdblock(){
+    (function() {
+        function A() {}
+        A.prototype = {
+            rules: {
+                '17173_in':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/PreloaderFile(Customer)?\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173_in_20150522.swf"
+                },
+                '17173_out':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/PreloaderFileFirstpage\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173_out_20150522.swf"
+                },
+                '17173_live':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/Player_stream(_firstpage)?\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173_stream_20150522.swf"
+                },
+                '17173_live_out':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/Player_stream_(custom)?Out\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173.out.Live.swf"
+                }
+            },
+            _done: null,
+            get done() {
+                if(!this._done) {
+                    this._done = new Array();
+                }
+                return this._done;
+            },
+            addAnimations: function() {
+                var style = document.createElement('style');
+                style.type = 'text/css';
+                style.innerHTML = 'object,embed{\
+                -webkit-animation-duration:.001s;-webkit-animation-name:playerInserted;\
+                -ms-animation-duration:.001s;-ms-animation-name:playerInserted;\
+                -o-animation-duration:.001s;-o-animation-name:playerInserted;\
+                animation-duration:.001s;animation-name:playerInserted;}\
+                @-webkit-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+                @-ms-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+                @-o-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+                @keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}';
+                document.getElementsByTagName('head')[0].appendChild(style);
+            },
+            animationsHandler: function(e) {
+                if(e.animationName === 'playerInserted') {
+                    this.replace(e.target);
+                }
+            },
+            replace: function(elem) {
+                if(this.done.indexOf(elem) != -1) return;
+                this.done.push(elem);
+                var player = elem.data || elem.src;
+                if(!player) return;
+                var i, find, replace = false;
+                for(i in this.rules) {
+                    find = this.rules[i]['find'];
+                    if(find.test(player)) {
+                        replace = this.rules[i]['replace'];
+                        if('function' === typeof this.rules[i]['preHandle']) {
+                            this.rules[i]['preHandle'].bind(this, elem, find, replace, player)();
+                        }else{
+                            this.reallyReplace.bind(this, elem, find, replace)();
+                        }
+                        break;
+                    }
+                }
+            },
+            reallyReplace: function(elem, find, replace) {
+                elem.data && (elem.data = elem.data.replace(find, replace)) || elem.src && ((elem.src = elem.src.replace(find, replace)) && (elem.style.display = 'block'));
+                var b = elem.querySelector("param[name='movie']");
+                this.reloadPlugin(elem);
+            },
+            reloadPlugin: function(elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                var newElem = elem.cloneNode(true);
+                this.done.push(newElem);
+                if(nextSibling) {
+                    parentNode.insertBefore(newElem, nextSibling);
+                } else {
+                    parentNode.appendChild(newElem);
+                }
+            },
+            init: function() {
+                var handler = this.animationsHandler.bind(this);
+                document.body.addEventListener('webkitAnimationStart', handler, false);
+                document.body.addEventListener('msAnimationStart', handler, false);
+                document.body.addEventListener('oAnimationStart', handler, false);
+                document.body.addEventListener('animationstart', handler, false);
+                this.addAnimations();
+            }
+        };
+        new A().init();
+    })();
+}
+//remove baidu search ad
+if(document.URL.indexOf('www.baidu.com') >= 0){
+    if(document && document.getElementsByTagName && document.getElementById && document.body){
+        var aa = function(){
+            var all = document.body.querySelectorAll("#content_left div,#content_left table");
+            for(var i = 0; i < all.length; i++){
+                if(/display:\s?(table|block)\s!important/.test(all[i].getAttribute("style"))){all[i].style.display= "none";all[i].style.visibility='hidden';}
+            }
+            all = document.body.querySelectorAll('.result.c-container[id="1"]');
+            //if(all.length == 1) return;
+            for(var i = 0; i < all.length; i++){
+                if(all[i].innerHTML && all[i].innerHTML.indexOf('广告')>-1){
+                    all[i].style.display= "none";all[i].style.visibility='hidden';
+                }
+            }
+        }
+        aa();
+        document.getElementById('wrapper_wrapper').addEventListener('DOMSubtreeModified',aa)
+    };
+}
+//remove sohu video ad
+if (document.URL.indexOf("tv.sohu.com") >= 0){
+    if (document.cookie.indexOf("fee_status=true")==-1){document.cookie='fee_status=true'};
+}
+//remove 56.com video ad
+if (document.URL.indexOf("56.com") >= 0){
+    if (document.cookie.indexOf("fee_status=true")==-1){document.cookie='fee_status=true'};
+}
+//fore iqiyi enable html5 player function
+if (document.URL.indexOf("iqiyi.com") >= 0){
+    if (document.cookie.indexOf("player_forcedType=h5_VOD")==-1){
+        document.cookie='player_forcedType=h5_VOD'
+        if(localStorage.reloadTime && Date.now() - parseInt(localStorage.reloadTime)<60000){
+            console.log('no reload')
+        }else{
+            location.reload()
+            localStorage.reloadTime = Date.now();
+        }
+    }
+}
+</script><style type="text/css">object,embed{                -webkit-animation-duration:.001s;-webkit-animation-name:playerInserted;                -ms-animation-duration:.001s;-ms-animation-name:playerInserted;                -o-animation-duration:.001s;-o-animation-name:playerInserted;                animation-duration:.001s;animation-name:playerInserted;}                @-webkit-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-ms-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-o-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}</style></head>
+<body>
+  <div class="headers">
+    <div class="headT"><img src="./JDATA竞赛详情页_files/logo.png"><nav><li class="headRed"><a href="https://jdata.jd.com/index.html">首页</a></li><li class="headRed"><a href="https://jdata.jd.com/html/list.html">竞赛</a></li><li class="headRed"><a href="https://jdata.jd.com/html/knowledge.html">知识库</a></li><li class="headList">排名与奖励<ul><li><a href="https://jdata.jd.com/html/heroR.html">英雄榜</a></li><li><a href="https://jdata.jd.com/html/gift.html">周边兑换</a></li></ul></li><li class="headRed"><a target="_blank" href="https://zhaopin.jd.com/JD/web/index" clstag="pageclick|keycount|201801031|zhaopin">招聘</a></li><li class="headRed"><a target="_blank" href="http://group.jd.com/circle/all-circle/20000811.htm" clstag="pageclick|keycount|201801031|shequ">社区</a></li><li class="headRed"><a href="https://jdata.jd.com/html/help.html">帮助中心</a></li></nav><div class="loginM"><a class="apply" href="javascript:;" style="display: none;">我要举办比赛</a><a class="login" href="https://passport.jd.com/uc/login?ReturnUrl=https%3A%2F%2Fjdata.jd.com%2Fhtml%2Fdetail.html%3Fid%3D1">登录</a><a class="register" href="https://reg.jd.com/reg/person?ReturnUrl=https%3A%2F%2Fjdata.jd.com%2Fhtml%2Fdetail.html%3Fid%3D1">注册</a><span class="userMess"></span></div></div>
+  </div>
+  <div class="path"><a href="https://jdata.jd.com/index.html">首页</a> &gt;&nbsp; <a href="https://jdata.jd.com/html/list.html">竞赛</a> &gt;&nbsp; <span>高潜用户购买意向预测</span></div>
+  <div class="part">
+    <div class="pCont">
+      <p class="status lFinish">已结束</p>
+      <div class="lLeft">
+        <img src="./JDATA竞赛详情页_files/5a6fe454N38fb8250.jpg">
+      </div>
+      <div class="lRight">
+        <p class="lrTit">高潜用户购买意向预测</p>
+        <div class="partDes">
+          <p class="gray"></p>
+          <p class="red" style="width: 500px;"></p>
+          <span class="first allRed">2017/03/19开始</span>
+          <span class="end allRed">2017/05/26结束</span>
+          <ul class="point"><li style="left: 62.5px;" class="pRed"></li><li style="left: 125px;" class="pRed"></li><li style="left: 187.5px;" class="pRed"></li><li style="left: 250px;" class="pRed"></li><li style="left: 312.5px;" class="pRed"></li><li style="left: 375px;" class="pRed"></li><li style="left: 437.5px;" class="pRed"></li></ul>
+          <div class="mess"><p>2017/03/19 A榜提交</p><p>2017/03/19 报名开始</p><p>2017/03/25 评分开始</p><p>2017/05/14 报名截止</p><p>2017/05/21 A榜结束</p><p>2017/05/21 B榜提交</p><p>2017/05/26 B榜结束</p></div>
+        </div>
+        <div class="comp">
+<!--           <p>
+            <span>参赛队伍数</span>
+            <span class="teamN"></span>
+          </p> -->
+          <p>
+            <span>参赛人数</span>
+            <span class="personN">7,346</span>
+          </p>
+          <p>
+            <span>提交结果数</span>
+            <span class="resultN">22,615</span>
+          </p>
+          <p class="inviteP" style="display: none;">
+            <span id="invite-btn">
+                    <span style="color:#f44440; font-weight:bold;cursor: pointer;">点击邀请好友</span>
+            </span>
+            <span class="friendN"></span>
+          </p>
+          <a class="out" href="javascript:;">未登录</a>
+        </div>
+      </div>
+      <div class="reward">
+        <div class="rSalary">
+          <p>总奖池</p>
+          <p class="rLine"></p>
+          <p class="rMoney"><i>￥</i>554,000</p>
+        </div>
+        <div class="rCo">
+          <p>主办方</p>
+          <p class="rLine"></p>
+          <p class="rPic"><img src="./JDATA竞赛详情页_files/5a45b8abN59510a1e.jpg"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content" style="min-height: 164px;">
+    <ul class="cLeft"><li class="normal" data-type="0" data-tabid="1">赛制介绍</li><li class="normal active" data-type="0" data-tabid="2">赛题与数据</li><li class="normal" data-type="0" data-tabid="3">FAQ</li><li class="especial esClick myRanking" data-ibtn="true" data-type="2" data-tabid="1" style="display: none;">排行榜<ul><li data-type="2" data-tabid="1">A榜</li><li data-type="2" data-tabid="2">B榜</li></ul></li><li class="especial esClick comManage" data-ibtn="true" data-type="3" data-tabid="0" style="display: none;">竞赛管理<ul><li style="display: none;" data-type="3" data-tabid="1">提交结果</li><li class="myteam" data-type="3" data-tabid="2">我的队伍</li></ul></li><li class="normal seeTeam" data-type="4" data-tabid="0" style="display: none;">参赛队伍</li></ul>
+    <div class="cMess">
+      <div class="cmInf" style="display: none;">
+        <span class="cMove"></span>
+        <span class="cMore"><a href="https://jdata.jd.com/html/detail.html?id=1">查看更多 &gt;&gt;</a></span>
+      </div>
+      <section style="display: none;"><p style="margin-top: 40px; margin-bottom: 0px; white-space: normal; ">
+    <span style=" font-size: 20px;color: rgb(255, 0, 0);"><strong><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;;">01</span></strong><strong><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;;">&nbsp;</span></strong></span><span style="font-size: 16px;"><span style="color: rgb(255, 0, 0);"><strong><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;;">/</span></strong></span><strong><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;;">竞赛概述</span></strong><strong><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;;"></span></strong></span>
+</p>
+<p style="margin-top: 10px; margin-bottom: 0px; white-space: normal;">
+    <span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 14px;  color: #666666;">京东作为中国最大的自营式电商，在保持高速发展的同时，沉淀了数亿的忠实用户，积累了海量的真实数据。如何从历史数据中找出规律，去预测用户未来的购买需求，让最合适的商品遇见最需要的人，是大数据应用在精准营销中的关键问题，也是所有电商平台在做智能化升级时所需要的核心技术。本次大赛以精准推荐中的一个具体问题为例，希望找到数据挖掘领域的顶尖人才，与我们共同奔跑在浪潮之巅。<br><br>本次大赛以京东商城真实的用户、商品和行为数据（脱敏后）为基础，参赛队伍需要通过数据挖掘的技术和机器学习的算法，构建用户购买商品的预测模型，输出高潜用户和目标商品的匹配结果，为精准营销提供高质量的目标群体。同时，希望参赛队伍能通过本次比赛，挖掘数据背后潜在的意义，为电商用户提供更简单、快捷、省心的购物体验。</span>
+</p>
+<p style="margin-top: 40px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-size: 20px;font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0);"><strong>02</strong><strong>&nbsp;</strong></span><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 16px;"><span style="color: rgb(255, 0, 0);"><strong>/</strong></span><strong>重要时间</strong></span>
+</p>
+<p style="margin-top: 10px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 14px;  color: #666666;">2017年3月19日00:00 开放赛题信息和报名载；<br>2017年3月25日00:00 开放数据、评测以及排行榜平台；<br>2017年5月13日23:59 报名截止，并关闭组队；<br>2017年5月20日23:59 关闭A榜提交；<br>2017年5月21日00:00 开放B榜提交，并进行小号作弊和算法有效性排查；<br>2017年5月25日23:59 关闭B榜提交，并开放提交相关审核材料；<br>2017年5月27日23:59 提交相关审核材料截止；<br>2017年5月31日18:00 公布入围决赛的10支队伍名单。</span>
+</p>
+<p style="margin-top: 40px; margin-bottom: 0px;white-space: normal;">
+    <span style=" font-size: 20px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0);"><strong>03</strong><strong>&nbsp;<span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0); font-size: 16px;">/</span></strong></span><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 16px;"><span style="color: rgb(255, 0, 0);"></span><strong>参赛对象</strong></span>
+</p>
+<p style="margin-top: 10px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 14px; color: #666666;">大赛面向全社会开放，高等院校、科研单位、互联网企业等人员均可报名参赛。<br>大赛主办和协办单位有机会提前接触赛题和数据的人员不得参加比赛，其他员工可以参与比赛排名，但不领取任何奖项。</span>
+</p>
+<p style="margin-top: 40px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-size: 20px;font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0);"><strong>04</strong><strong>&nbsp;<span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0); font-size: 16px;">/</span></strong></span><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 16px;"><span style="color: rgb(255, 0, 0);"></span><strong>组队规则</strong></span>
+</p>
+<p style="margin-top: 10px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 14px; color: #666666;">参赛队伍可以是单人组队或自由组合，每支队伍1-5人。<br>注：每人只能参加一支队伍; 保证参赛队员报名信息准确有效，不得使用小号，否则会被取消参赛资格及奖励。</span>
+</p>
+<p style="margin-top: 40px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-size: 20px;font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0);"><strong>05</strong><strong>&nbsp;<span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0); font-size: 16px;">/</span></strong></span><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 16px;"><span style="color: rgb(255, 0, 0);"></span><strong>评测</strong></span>
+</p>
+<p style="margin-top: 10px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 14px; color: #666666;">A榜期间每支队伍每天提交次数不超过2次；<br>B榜期间每支队伍每天提交次数不超过2次，采取定时评测，即每天评测1次，评测时间是每天0点，评测的文件是每支队伍中所有成员最后提交的文件;<br>注：不能扫描答案，我们会有相应的检测机制，如果存在线上扫描得到的答案在算法中出现成绩将会被取消。</span>
+</p>
+<p style="margin-top: 40px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-size: 20px;font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0);"><strong>06</strong><strong>&nbsp;<span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0); font-size: 16px;">/</span></strong></span><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 16px;"><span style="color: rgb(255, 0, 0);"></span><strong>奖励</strong></span>
+</p>
+<p style="margin-top: 10px; margin-bottom: 0px;white-space: normal;">
+    <img src="./JDATA竞赛详情页_files/5a3b27dcN8ce9e192.png" title="" alt="upfile">
+</p>
+<p style="margin-top: 10px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 14px; color: #666666;">* Special offer：<br>（1）社会优秀人才及应届生：通过专家评委考核即拥有offer，每支队伍至少一人确定通过；入职前boss一对一指导；充分的技术方向选择权；成为京东算法大赛代言人；如为应届博士生，直通科学家项目。<br>（2）在校非应届生：直通JD 京锐夏令营，最优秀人才的最佳实习实践。<br><br>*大赛周冠军：<br>（1）周冠军共计评选7次，同一支队伍可以多次获得多周的周冠军，以每支队伍截止到下述时间点提交结果总分中最好成绩为准。<br>（2）周冠军评测时间为下述日期的0点，2017年4月3日、2017年4月10日、2017年4月17日、2017年4月24日、2017年5月1日、2017年5月8日、2017年5月15日；<br>（3）周榜单公布时间为评测日期当日的中午12点；<br>（4）周榜单前Top5团队需要准备最优成绩的答案结果文件及相关资料（可运行代码、运行环境说明、解题思路），大赛主办方将对TOP1团队进行作弊检验，通过检验即可获取奖励；若检验不通过，则对TOP2团队进行作弊检验，通过检验即可获取奖励，以此类推；如果Top5团队全部未通过检验，则本轮周冠军轮空；届时大赛主办方将邮件及短信通知相关资料提交事宜，请参赛选手注意查收；<br>（5）Top5参赛团队提交资料截止时间为每周三24点，过期将视为放弃排名。<br><br>*京东员工参赛规则详见内部宣传公告且不参与对外排名，奖金由京东内部提供，不占用大赛奖金池。<br><br>*大赛所有奖项的奖金以队伍为单位统一在大赛结束后发放。<br><br>*京东享有本次比赛所有模型代码及相关资料的使用权，最终解释权归京东所有。</span>
+</p>
+<p style="margin-top: 40px; margin-bottom: 0px;white-space: normal;">
+    <span style="font-size: 20px;font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0);"><strong>07&nbsp;</strong><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; color: rgb(255, 0, 0); font-size: 16px;"><strong>/</strong></span></span><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 16px; color: rgb(255, 0, 0);"><strong><span style="font-size: 16px; color: rgb(0, 0, 0);">交流群</span></strong></span>
+</p>
+<p style="margin-top: 10px; margin-bottom: 40px; white-space: normal;">
+    <span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 14px; color: #666666;">官方QQ群：435027670 （青龙）、 614656641（白虎）</span>
+</p></section>
+      <section style="display: block;"><p style="margin-top: 40px;margin-bottom: 30px;white-space: normal;background: white"><strong><span style="font-size: 20px;font-family: Tahoma, sans-serif;color: red">01</span><span style="font-size: 16px;font-family: Tahoma, sans-serif;color: red">&nbsp;</span><span style="font-family: Tahoma, sans-serif;color: red">/</span></strong><strong><span style="font-size: 16px"><span style="color: rgb(51, 51, 51);font-family: 宋体, SimSun">评分</span></span></strong></p><p style="white-space: normal;line-height: 30px;background: white"><span style="font-family: 微软雅黑, sans-serif; color: #666666;font-size: 14px;">参赛者提交的结果文件中包含对所有用户购买意向的预测结果。对每一个用户的预测结果包括两方面：<br>（1）该用户2016-04-16到2016-04-20是否下单P中的商品，提交的结果文件中仅包含预测为下单的用户，预测为未下单的用户，无须在结果中出现。若预测正确，则评测算法中置label=1，不正确label=0；<br>选手从数据中自行组成特征和数据格式，自由组合训练测试数据比例。<br>（2）如果下单，下单的sku_id （只需提交一个sku_id），若sku_id预测正确，则评测算法中置pred=1，不正确pred=0。<br>对于参赛者提交的结果文件，按如下公式计算得分：<br><img src="./JDATA竞赛详情页_files/5a3b2bf0N3349ce14.png" title="" alt="upfile"><br>此处的F1值定义为：<br><img src="./JDATA竞赛详情页_files/5a3b2c42Na4a99bb8.png" title="" alt="upfile">&nbsp; &nbsp;<img src="./JDATA竞赛详情页_files/5a3b2c68Ncfff3cf5.png" title="" alt="upfile"><br>其中：<br>Precise为准确率，Recall为召回率；<br>F1<sub>1</sub>是label=1或0的F1值，F1<sub>2</sub>是pred=1或0的F1值。</span></p><p style="margin-top: 40px;margin-bottom: 27px;white-space: normal;background: white"><strong><span style="font-size: 20px;font-family: Tahoma, sans-serif;color: red">02</span><span style="font-size: 16px;font-family: Tahoma, sans-serif;color: red">&nbsp;</span><span style="font-family: Tahoma, sans-serif;color: red">/</span></strong><span style="color: rgb(51, 51, 51);font-family: 宋体, SimSun;font-size: 16px"><strong>数据描述</strong></span></p><p style="white-space: normal;line-height: 30px;background: white"><span style="font-family: 微软雅黑, sans-serif; color: #666666;font-size: 14px;">* 训练数据部分：<br>提供2016-02-01到2016-04-15日用户集合U中的用户，对商品集合S中部分商品的行为、评价、用户数据；<br>提供部分候选商品的数据P。<br>选手从数据中自行组成特征和数据格式，自由组合训练测试数据比例。<br><br>* 预测数据部分：<br>2016-04-16到2016-04-20用户是否下单P中的商品，每个用户只会下单一个商品；抽取部分下单用户数据，A榜使用50%的测试数据来计算分数；B榜使用另外50%的数据计算分数(计算准确率时剔除用户提交结果中user_Id与A榜的交集部分)。<br>为保护用户的隐私和数据安全，所有数据均已进行了采样和脱敏。<br>数据中部分列存在空值或NULL，请参赛者自行处理。<br><br>* 符号定义：<br>S：提供的商品全集；<br>P：候选的商品子集（JData_Product.csv），P是S的子集；<br>U：用户集合；<br>A：用户对S的行为数据集合；<br>C：S的评价数据。<br><br>* 数据模型<br>（1）用户数据<br><img src="./JDATA竞赛详情页_files/5a3b3755Ndadebfb2.png" title="" alt="upfile"><br>（2）商品数据<br><img src="./JDATA竞赛详情页_files/5a3b3771Nf7735f73.png" title="" alt="upfile"><br>（3）评价数据<br><img src="./JDATA竞赛详情页_files/5a3b3795Naac67022.png" title="" alt="upfile"><br>（4）行为数据<br><img src="./JDATA竞赛详情页_files/5a3b37acN29930616.png" title="" alt="upfile"></span><br></p><p style="margin-top: 40px;margin-bottom: 27px;white-space: normal;background: white"><strong><span style="font-size: 20px;font-family: Tahoma, sans-serif;color: red">03</span><span style="font-size: 16px;font-family: Tahoma, sans-serif;color: red">&nbsp;</span><span style="font-family: Tahoma, sans-serif;color: red">/</span><span style="color: rgb(51, 51, 51);font-family: 宋体, SimSun;font-size: 16px">任务描述</span></strong></p><p style="margin-top: 0px;margin-bottom: 0px;white-space: normal;line-height: 30px;background: white"><span style="font-family: 微软雅黑, sans-serif; color: #666666; font-size: 14px;">参赛者需要使用京东多个品类下商品的历史销售数据，构建算法模型，预测用户在未来5天内，对某个目标品类下商品的购买意向。对于训练集中出现的每一个用户，参赛者的模型需要预测该用户在未来5天内是否购买目标品类下的商品以及所购买商品的SKU_ID。评测算法将针对参赛者提交的预测结果，计算加权得分。</span></p><p style="margin-top: 40px;margin-bottom: 27px;white-space: normal;background: white"><strong><span style="font-size: 20px;font-family: Tahoma, sans-serif;color: red">04</span><span style="font-size: 16px;font-family: Tahoma, sans-serif;color: red">&nbsp;</span><span style="font-family: Tahoma, sans-serif;color: red">/</span><span style="color: rgb(51, 51, 51);font-family: 宋体, SimSun;font-size: 16px">提交作品要求</span></strong></p><p style="margin-top: 0px; margin-bottom: 40px; white-space: normal; line-height: 30px; background: white;"><span style="font-family: 微软雅黑, sans-serif; color: #666666; font-size: 14px;">初赛提交CSV结果文件，进入复赛时提交源代码。<br>初赛提交CSV文件中包含对有购买意向的用户所购买商品的预测结果，字段如下：<br>user_id：用户ID，保证唯一，请勿在一次提交的结果文件中包含重复的user_id<br>sku_id：商品集合P中的商品ID，请勿在同一行中提交多个sku_id<br>对于预测出没有购买意向的用户，在提交的CSV文件中不要包含该用户的信息。<br>提交结果demo截图如下：<br><img src="./JDATA竞赛详情页_files/5a3b3640Ned068db4.png" title="" alt="upfile"><br></span></p><iframe id="tmp_downloadhelper_iframe" style="display: none;" src="./JDATA竞赛详情页_files/saved_resource.html"></iframe></section>
+      <section style="display: none;"></section>
+      <section style="display: none;">
+        <div class="ranking">
+          <p class="rkList">
+          </p>
+          <div class="rkCont">
+            <div class="rkc">
+              <div class="rkcFil">
+                <select class="timeR">
+                  <option value="0">全部时间排名</option>
+                </select>
+                <span class="rkcSearch">
+                  <input type="text" placeholder="请输入您要查找的队伍信息">
+                  <i></i>
+                </span>
+                <span class="rkcEnd">最终排名前10者为入围名单</span>
+              </div>
+              <div class="pageBox">
+                <p class="pageTit">
+                  <span class="pt">排名</span>
+                  <span class="pt2">参赛队</span>
+                  <span class="pt4">分数</span>
+                  <span class="pt5">提交次数</span>
+                  <span class="pt6">最优成绩提交时间</span>
+                  <span class="pt7">最近提交时间</span>
+                </p>
+                <p class="pagePar">
+                  <span class="pp">排名</span>
+                  <span class="pp2">参赛队</span>
+                  <span class="pp3">分数</span>
+                  <span class="pp4">最优成绩提交时间</span>
+                </p>
+                <ul class="pageDiv">
+                </ul>
+                <div class="notContent hide">
+                  <p class="contPic"></p>
+                  <p class="contDes">没有找到数据呢，换个姿势再搜索一次吧~</p>
+                </div>
+                <div class="page">
+                  <ul class="pageMenu clearfix">
+                    <li class="firstPage">首页</li>
+                    <li class="prevPage"> &lt; 上一页 </li>
+                    <div class="pageObj ">
+                    </div>
+                    <li class="nextPage"> 下一页 &gt; </li>
+                    <li class="lastPage">尾页</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="ranking">
+          <p class="rkList">
+          </p>
+          <div class="rkCont">
+            <div class="rkc">
+              <div class="rkcFil">
+                <select class="timeR">
+                  <option value="0">全部时间排名</option>
+                </select>
+                <span class="rkcSearch">
+                  <input type="text" placeholder="请输入您要查找的队伍信息">
+                  <i></i>
+                </span>
+                <span class="rkcEnd">最终排名前10者为入围名单</span>
+              </div>
+              <div class="pageBox">
+                <p class="pageTit">
+                  <span class="pt">排名</span>
+                  <span class="pt2">参赛队</span>
+                  <span class="pt4">分数</span>
+                  <span class="pt5">提交次数</span>
+                  <span class="pt6">最优成绩提交时间</span>
+                  <span class="pt7">最近提交时间</span>
+                </p>
+                <p class="pagePar">
+                  <span class="pp">排名</span>
+                  <span class="pp2">参赛队</span>
+                  <span class="pp3">分数</span>
+                  <span class="pp4">最优成绩提交时间</span>
+                </p>
+                <ul class="pageDiv">
+                </ul>
+                <div class="notContent hide">
+                  <p class="contPic"></p>
+                  <p class="contDes">没有找到数据呢，换个姿势再搜索一次吧~</p>
+                </div>
+                <div class="page">
+                  <ul class="pageMenu clearfix">
+                    <li class="firstPage">首页</li>
+                    <li class="prevPage"> &lt; 上一页 </li>
+                    <div class="pageObj ">
+                    </div>
+                    <li class="nextPage"> 下一页 &gt; </li>
+                    <li class="lastPage">尾页</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style="display: none;">
+        <div class="message">
+          <ul class="topic">
+          </ul>
+          <div class="tpContent">
+            <div class="tpSend">
+              <form class="uploadForm" enctype="multipart/form-data">
+                <input class="file" type="file" name="file" accept=".csv,.zip">
+                <input class="fileText" type="text" placeholder="请选择上传文件，小于5M" readonly="">
+                <button class="upload" type="button">选择文件</button>
+                <a class="fileLoad" href="https://jdata.jd.com/html/detail.html?id=1" target="_blank">模板下载</a>
+                <p class="fileW"></p>
+                <p class="fileD">
+                  <textarea maxlength="50" rows="3" cols="20" class="workDes" type="textare" placeholder="请输入文件说明，小于50个字"></textarea>
+                  <span class="wdCheck">只支持中文英文数字且不能为空！</span>
+                </p>
+              </form>
+              <p class="fmSub"><span class="fmsRun">提交结果</span><span class="fmsDes">还可提交<i></i>次结果</span></p>
+              <div class="tpCont">
+                <div class="tpList" style="display: block;">
+                  <p class="tplTit"></p>
+                  <ul class="tpType">
+                    <li class="tptAct" data-cont="true" data-type="0">我的提交</li>
+                    <li data-type="1">队友提交</li>
+                  </ul>
+                  <div class="submitR" style="display: block;">
+                    <div class="pageBox">
+                      <p class="srTit">
+                        <span class="sr">编号</span>
+                        <span class="sr3">状态</span>
+                        <span class="sr4">得分</span>
+                        <span class="sr6">提交文件名</span>
+                        <span class="sr7">文件说明</span>
+                        <span class="sr8">提交者</span>
+                        <span class="sr9">提交时间</span>
+                      </p>
+                      <ul class="pageDiv">
+                      </ul>
+                      <div class="notContent hide">
+                        <p class="contPic"></p>
+                        <p class="contDes">没有找到数据呢~</p>
+                      </div>
+                      <div class="page">
+                        <ul class="pageMenu clearfix">
+                          <li class="firstPage">首页</li>
+                          <li class="prevPage"> &lt; 上一页 </li>
+                          <div class="pageObj ">
+                          </div>
+                          <li class="nextPage"> 下一页 &gt; </li>
+                          <li class="lastPage">尾页</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="submitR">
+                    <div class="pageBox">
+                      <p class="srTit">
+                        <span class="sr">编号</span>
+                        <span class="sr3">状态</span>
+                        <span class="sr4">得分</span>
+                        <span class="sr6">提交文件名</span>
+                        <span class="sr7">文件说明</span>
+                        <span class="sr8">提交者</span>
+                        <span class="sr9">提交时间</span>
+                      </p>
+                      <ul class="pageDiv">
+                      </ul>
+                      <div class="notContent hide">
+                        <p class="contPic"></p>
+                        <p class="contDes">没有找到数据呢~</p>
+                      </div>
+                      <div class="page">
+                        <ul class="pageMenu clearfix">
+                          <li class="firstPage">首页</li>
+                          <li class="prevPage"> &lt; 上一页 </li>
+                          <div class="pageObj ">
+                          </div>
+                          <li class="nextPage"> 下一页 &gt; </li>
+                          <li class="lastPage">尾页</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="message">
+          <!-- 个人未组队 -->
+          <div class="single">
+            <div class="sgTop">
+              <p class="sgtPic"><img src="./JDATA竞赛详情页_files/scientist.jpg"></p>
+              <p class="sgtTit">
+                <span class="sgttName"></span>
+                <span>（您现在是个人身份参赛）</span>
+              </p>
+            </div>
+            <div class="sgTeam">
+              <p class="sgtDes">顺利完赛需要实名认证，若您还没实名，请尽快完成~</p>
+              <div class="sgtM">
+                <span class="sgtmC"><span>组建队伍</span></span>
+                <span class="sgtmJ"><span>加入已有队伍</span></span>
+              </div>
+            </div>
+          </div>
+          <!-- 个人组队 -->
+          <div class="person">
+            <div class="perInfo">
+              <img src="./JDATA竞赛详情页_files/scientist.jpg">
+              <p class="nPer"></p>
+              <ul class="infList">
+                <li class="infSta">队伍状态：<span></span></li>
+                <li class="infSkill">需求技能：<span></span></li>
+                <li class="infInt">队伍介绍：<span></span></li>
+                <li class="infMem">需求队员：<span></span></li>
+              </ul>
+            </div>
+            <div class="TeamMem">
+              <p class="tmNum">队员信息<span class="tmNums"></span></p>
+              <ul class="tmLists">
+              </ul>
+            </div>
+          </div>
+          <!-- 队长 -->
+          <div class="caption">
+            <div class="capInfo">
+              <img src="./JDATA竞赛详情页_files/scientist.jpg">
+              <p class="nPer"></p>
+              <ul class="infList">
+                <li class="infSta">队伍状态：<span></span></li>
+                <li class="infSkill">需求技能：<span></span></li>
+                <li class="infInt">队伍介绍：<span></span></li>
+                <li class="infMem">需求队员：<span></span></li>
+              </ul>
+              <div class="infEdit">编辑团队信息</div>
+            </div>
+            <div class="TeamMem">
+              <p class="tmNum">队员信息<span class="tmNums"></span><span class="tmmDe">解散队伍</span></p>
+              <ul class="tmLists">
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="message material-container">
+          <div class="means">
+            <form class="uploadForm" enctype="multipart/form-data">  
+              <input type="text" placeholder="请选择上传文件，支持压缩文件，小于10M" readonly/>
+              <input type="file" name="file" accept="*" />
+              <button type="button">选择文件</button>
+              <a class="declare" href="javascript:void(0);">提交说明</a>
+              <p class="err">&nbsp;</p>
+              <p class="fileD"><textarea name="topic" maxlength="30" rows="3" cols="20" class="workDes" type="textare" placeholder="请输入文件说明,最多30个字"></textarea></p>
+              <p class="err">&nbsp;</p>
+            </form>
+            <p class="fmSub"><span class="fmsMean">提交资料</span></p>
+          </div>
+          <div class="meansR">
+            <div class="pageBox">
+              <p class="mrTit">
+                <span class="mr">编号</span>
+                <span class="mr2">状态</span>
+                <span class="mr3">提交文件名</span>
+                <span class="mr4">文件说明</span>
+                <span class="mr5">提交者</span>
+                <span class="mr6">提交时间</span>
+                <span class="mr7">审核结果</span>                
+              </p>
+              <ul class="pageDiv">
+                <li class="mrList">
+                  <span class="mr">51</span>
+                  <span class="mr2">提交正常</span>
+                  <span class="mr3">12345.csv</span>
+                  <span class="mr4"><span>所有电商平台在做智能化升级时所需要的核心技术</span></span>
+                  <span class="mr5">寂寞空天团</span>
+                  <span class="mr6"><span>2017-04-17 23 : 50 : 56</span></span>
+                  <span class="mr7">审核中</span>
+                </li>
+              </ul>
+              <div class="notContent hide">
+                <p class="contPic"></p>
+                <p class="contDes">没有找到数据呢~</p>
+              </div>
+              <div class="page">
+                <ul class="pageMenu clearfix">
+                  <li class="firstPage">首页</li>
+                  <li class="prevPage"> < 上一页 </li>
+                  <div class="pageObj ">
+                  </div>
+                  <li class="nextPage"> 下一页 > </li>
+                  <li class="lastPage">尾页</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </section>
+      <section style="display: none;">
+        <p class="teams">
+          <select class="tmList">
+            <option value="">全部参赛队伍</option>
+            <option value="0">招募中队伍</option>
+            <option value="2">停止招募队伍</option>
+            <option value="4">已满员队伍</option>
+          </select>
+          <span class="tmSearch">
+            <input type="text" placeholder="请输入您要查找的队伍名称">
+            <i></i>
+          </span>
+          <span class="slgW">只支持中文英文数字且不能为空！</span>
+        </p>
+        <div class="pageBox">
+          <ul class="pageDiv teamList">
+          </ul>
+          <div class="notContent hide">
+            <p class="contPic"></p>
+            <p class="contDes">没有找到队伍呢，换个姿势再搜索一次吧~</p>
+          </div>
+          <div class="page pagePos">
+            <ul class="pageMenu clearfix">
+              <li class="firstPage">首页</li>
+              <li class="prevPage"> &lt; 上一页 </li>
+              <div class="pageObj ">
+              </div>
+              <li class="nextPage"> 下一页 &gt; </li>
+              <li class="lastPage">尾页</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="bottom">
+    <p class="bTit"><img src="./JDATA竞赛详情页_files/logoBot.png"></p>
+    <p class="bDes">Copyright © 2004-2018 京东JD.com 版权所有</p>
+  </div>
+  <div class="rightIcon" style="display: block;">
+    <span class="rCode"></span>
+    <span class="rTop"></span>
+  </div>
+  <div class="mark" style="display: none;"></div>
+  <div class="capECont">
+    <div class="team-edit-container">
+      <p class="tvTit">编辑队伍信息 <i>x</i></p>
+      <div class="cpeMess">
+        <p class="cecPic">
+          <img src="./JDATA竞赛详情页_files/scientist.jpg">
+          <span class="changePic">更换头像</span>
+        </p>
+        <div class="team-editor">
+          <p class="cecName">
+            <span>队伍名称：</span>
+            <input class="slogan" type="text" placeholder="请给你的队伍取个闪亮的名字吧">
+            <span class="slgW">名字已被占用！</span>
+          </p>
+          <p class="cecRec">
+            <span>招募队员：</span>
+            <span class="cecr recSelect" data-type="0">招募中</span>
+            <span class="cecr" data-type="2">停止招募</span>
+          </p>
+          <div class="cecSkill">
+            <span>需求技能：</span>
+            <span class="team-skill">
+              <!-- <span>Java<sup>x</sup></span>
+              <span>C++<sup>x</sup></span>
+              <span>Python<sup>x</sup></span> -->
+              <b></b>
+            </span>
+            <span class="skillW">最多可添加3个标签！</span>
+            <div class="skill-container"><dl class="skill-item"><dt class="skill1"><span>程序语言<i>&gt;</i></span></dt><dd class="skill2"><span>C/C++</span><span>C#</span><span>Go</span><span>java</span><span>Matlab</span><span>Perl</span><span>PHP</span><span>Python</span><span>R</span><span>Ruby</span><span>scala</span></dd></dl><dl class="skill-item"><dt class="skill1"><span>数据处理<i>&gt;</i></span></dt><dd class="skill2"><span>数据采集</span><span>数据抽样</span><span>数据清洗</span><span>数据融合</span><span>Graphlab</span><span>Hadoop</span><span>Hbase</span><span>Hive</span><span>Kafka</span><span>Mahout</span><span>Mysql</span><span>MongDb</span><span>NoSQL</span><span>Redis</span><span>Oracle</span><span>Spark</span><span>SQLServer</span><span>Storm</span><span>Sybase</span></dd></dl><dl class="skill-item"><dt class="skill1"><span>统计工具<i>&gt;</i></span></dt><dd class="skill2"><span>Excel</span><span>Knime</span><span>Matlab</span><span>R</span><span>RapidMiner</span><span>SAS</span><span>SPSS</span><span>Tableau</span><span>Weka</span></dd></dl><dl class="skill-item"><dt class="skill1"><span>数据分析<i>&gt;</i></span></dt><dd class="skill2"><span>统计分析</span><span>数据挖掘</span><span>机器学习</span><span>搜索引擎</span><span>推荐系统</span><span>关系预测</span><span>趋势预测</span><span>关系挖掘</span><span>分类聚类</span><span>文本挖掘</span><span>语音识别</span><span>图像识别</span><span>信号处理</span><span>数据可视化</span><span>数学建模</span><span>密码安全</span><span>信息检索</span><span>信息传播</span><span>统筹规划</span></dd></dl></div>
+          </div>
+          <div class="cecMember">
+            <span>需求队员：</span>
+            <span class="team-skill">
+              <b></b>
+            </span>
+            <!-- <input class="cecm" type="text" placeholder="请输入具体需求关键词，用英文逗号隔开" /> -->
+            <span class="memberW">最多可添加3个标签！</span>
+            <div class="skill-container"><dl class="skill-item"><dt class="skill1"><span>数据分析<i>&gt;</i></span></dt><dd class="skill2"><span>业务数据分析师</span><span>算法工程师</span><span>数据挖掘工程师</span></dd></dl><dl class="skill-item"><dt class="skill1"><span>数据应用<i>&gt;</i></span></dt><dd class="skill2"><span>开发工程师</span><span>架构工程师</span><span>数据库管理员</span></dd></dl><dl class="skill-item"><dt class="skill1"><span>产品搭建<i>&gt;</i></span></dt><dd class="skill2"><span>产品经理</span></dd></dl><dl class="skill-item"><dt class="skill1"><span>高级角色<i>&gt;</i></span></dt><dd class="skill2"><span>数据科学家</span><span>统计学家</span></dd></dl></div>
+          </div>   
+          <p class="cecIntro">
+            <span>队伍介绍：</span>
+            <textarea rows="3" cols="20" class="teamIntro" type="textare" placeholder="请输入队伍介绍, 最多50个字, 只能包含中文英文数字及[]{}()-_=,.!?;"></textarea>
+            <span class="slgW">描述有误</span>
+          </p>     
+        </div>
+        <p class="cecBtn">
+          <span class="cbSave">保存</span>
+          <span class="cbCancel">取消</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="reload">
+    <p class="reDes">哎呀出错了，请重新加载吧!</p>
+    <p class="reBtn">
+      <span class="reSend">确定</span>
+    </p>
+    <span class="reClose">x</span>
+  </div>
+  <div class="application">
+    <p class="appTit">确定要加入此队伍？</p>
+    <p class="appDes">您的申请将发送给该队伍的队长，请等待反馈</p>
+    <p class="appBtn">
+      <span class="abSend">发送</span>
+      <span class="abCancel">取消</span>
+    </p>
+    <span class="appClose">x</span>
+  </div>
+  <div class="creTeam">
+    <p class="cretTit">组建队伍</p>
+    <p class="cretInp"><input type="text" maxlength="20" placeholder="请输入队伍名称，小于20个字，只能包含中文英文数字"></p>
+    <span class="slgW">只支持中文英文数字且不能为空！</span>
+    <p class="cretBtn">
+      <span class="creSure">确定</span>
+      <span class="creCan">取消</span>
+    </p>
+    <span class="creClose">x</span>
+  </div>
+  <div class="invTeam">
+    <p class="cretTit">邀请队员</p>
+    <p class="invInp"><input type="text" maxlength="20" placeholder="请输入您将邀请的队员名称~"></p>
+    <span class="slgW">只支持中文英文数字且不能为空！</span>
+    <p class="cretBtn">
+      <span class="invSure">确定</span>
+      <span class="invCan">取消</span>
+    </p>
+    <span class="invClose">x</span>
+  </div>
+  <div class="quitTeam">
+    <p class="appTit">亲，确定要离开此队伍？</p>
+    <p class="delDes">退出后，你提交的结果将保留在原队伍中</p>
+    <p class="appBtn">
+      <span class="quitSure">确定</span>
+      <span class="quitCancel">取消</span>
+    </p>
+    <span class="quitClose">x</span>
+  </div>
+  <div class="delTeam">
+    <p class="appTit">确定要解散队伍？</p>
+    <p class="delDes">解散后，将删除队伍的所有信息且不可恢复</p>
+    <p class="appBtn">
+      <span class="delSure">确定</span>
+      <span class="delCancel">取消</span>
+    </p>
+    <span class="delClose">x</span>
+  </div>
+  <div class="setCaption">
+    <p class="appTit">确定要转移您的队长权限？</p>
+    <p class="delDes">权限转移后，将收回您作为队长的所有权限</p>
+    <p class="appBtn">
+      <span class="setSure">确定</span>
+      <span class="setCancel">取消</span>
+    </p>
+    <span class="setClose">x</span>
+  </div>
+  <div class="removeTeam">
+    <p class="appTit">确定要移除此队员？</p>
+    <p class="delDes">移除后，该成员所提交结果将保留在队伍中</p>
+    <p class="appBtn">
+      <span class="removeSure">确定</span>
+      <span class="removeCancel">取消</span>
+    </p>
+    <span class="removeClose">x</span>
+  </div>
+  <div class="joinCom">
+    <p class="appTit">确定要报名参赛？</p>
+    <p class="appDes">报名参赛后，可以选择以个人或团队身份参赛</p>
+    <p class="read">
+      <input type="checkbox">
+      <span>我已阅读并同意全部<a href="https://jdata.jd.com/html/help.html?local=1" target="_blank">《JDATA服务协议》</a><a target="_blank" href="https://jdata.jd.com/html/help.html?local=2">《JDATA隐私协议》</a></span>
+    </p>
+    <p class="appBtn">
+      <span class="joinGary">确定</span>
+      <span class="joinCancel">取消</span>
+    </p>
+    <span class="joinClose">x</span>
+  </div>
+  <div class="toCheck">
+    <p class="appTit">只有实名认证后才可以报名参赛哦~</p>
+    <p class="appBtn">
+      <span class="toSet">去实名认证</span>
+    </p>
+    <span class="toClose">x</span>
+  </div>
+  <div class="toInvite">
+      <p class="inTit"></p>
+      <p class="inBtn">
+          <span class="inSet">确定</span>
+      </p>
+      <span class="inClose">x</span>
+  </div>
+  <div class="toComplete">
+      <p class="comTit">顺利完赛需要完善个人信息，请尽快完成~</p>
+      <p class="comBtn">
+          <span class="comSet">确定</span>
+      </p>
+  </div>
+  <div class="messRe">
+    <p class="sdTit">提交资料要求 <i>x</i></p>
+    <div class="sdCont">
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+      <p class="sdcTit">1、精简版的特征、模型与结果</p>
+      <p class="sdcDes">1）最少需要保留那些处理方法和特征，才能保证结果在90%以上？</p>
+      <p class="sdcDes">2）最重要的模型是哪个？</p>
+    </div>
+    <p class="sdSure">我知道了</p>
+  </div>
+  <div class="success">
+    <p class="sRight"></p>
+    <p class="sCont">提交成功</p>
+  </div>
+  <div class="fail" style="display: none;">
+    <p class="fFault"></p>
+    <p class="fCont">提交失败</p>
+    <p class="fReal"><a href="javascript:;">去实名认证</a></p>
+  </div>
+  <!-- 头像裁剪 -->
+  <div class="avatar-dlg">
+    <div class="dlg-container">
+      <div class="dlg-header">
+        <span>设置头像</span>
+        <span class="close-avatar">X</span>
+      </div>
+      <div class="dlg-body">
+        <div class="dlg-left">
+          <div class="avatar-crop">
+            <img src="./JDATA竞赛详情页_files/scientist.jpg" id="avatar">
+          </div>
+          <form id="avatar-form" action="https://jdata.jd.com/image/upload">
+            <span class="chose-avatar">选择图片
+              <input type="file" accept="image/*" name="upfile" id="avatar-upload">
+              <input type="hidden" name="x" id="avatar-x" value="0">
+              <input type="hidden" name="y" id="avatar-y" value="0">
+              <input type="hidden" name="w" id="avatar-w" value="0">
+              <input type="hidden" name="h" id="avatar-h" value="0">
+            </span>
+          </form>
+        </div>
+        <div class="dlg-right">
+          <p>预览</p>
+          <div>
+            <div class="preview-panel">
+              <img src="https://jdata.jd.com/html/detail.html?id=1">
+            </div>
+          </div>
+          <p>拖拽或缩放大图中的圆形区域，预览的小图即为保存后的头像。</p>
+        </div>
+      </div>
+      <div class="dlg-footer">
+        <span class="save-avatar">保存</span>
+        <span class="cancel-avatar">取消</span>
+      </div>
+    </div>
+  </div>
+  <div class="loading-mask" style="display: none;">
+    <div><img src="./JDATA竞赛详情页_files/lazyload.gif"></div>
+  </div>
+  <div class="warn-success">
+    <p class="warn-sRight"></p>
+    <p></p>
+  </div>
+  <div class="warn-fail">
+    <p class="warn-fFault"></p>
+    <p></p>
+  </div>
+  <script type="text/javascript" src="./JDATA竞赛详情页_files/jquery.form.js.下载"></script>
+  <script src="./JDATA竞赛详情页_files/page.js.下载"></script>
+  <script type="text/javascript" src="./JDATA竞赛详情页_files/detail.js.下载"></script>
+  <script type="text/javascript" src="./JDATA竞赛详情页_files/common.min.js.下载"></script>
+  <script type="text/javascript" src="./JDATA竞赛详情页_files/detail.part2.min.js.下载"></script>
+  <script type="text/javascript" src="./JDATA竞赛详情页_files/jcrop.js.下载"></script>
+  <script type="text/javascript">
+  var jaq = jaq || [];
+  jaq.push(['account', 'JA2018_112923']);
+  jaq.push(['domain', 'jd.com']); 
+  (function () { 
+    var ja = document.createElement('script');
+    ja.type = 'text/javascript';
+    ja.async = true;
+    ja.src = '//wl.jd.com/joya.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(ja, s);
+  })();
+  </script>
+
+</body></html>

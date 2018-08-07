@@ -65,3 +65,11 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 ```
 
+
+
+Pycharm 导入tensorflow错误的解决办法, 设置Pycharm中cuda的环境变量...
+
+![1532612242237](assets/1532612242237.png)
+
+[PyCharm ImportError: libcusolver.so.8.0: cannot open shared object file: No such file or directory 解决办法](https://www.cnblogs.com/keyky/p/8075483.html)
+

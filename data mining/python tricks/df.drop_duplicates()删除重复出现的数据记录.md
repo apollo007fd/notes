@@ -1,0 +1,1 @@
+df.drop_duplicates()删除重复出现的数据记录

@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+'''
+Given a string, you need to reverse the order of characters in each word within a sentence while still preserving 
+whitespace and initial word order.
+
+Example 1:
+
+Input: "Let's take LeetCode contest"
+Output: "s'teL ekat edoCteeL tsetnoc"
+
+Note: In the string, each word is separated by single space and there will not be any extra space in the string. 
+
+solution1：
+find out every single word, then exchange them one by one.
+
+class Solution(object):
+    def reverseWords(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        ls = list(s)
+        leng = len(s)
+        start = 0
+        end = self.findWordEnding(ls, start, leng)
+        self.exchange(ls, start, end)
+        start = end+1
+        while start < leng:
+            end = self.findWordEnding(ls, start, leng)
+            self.exchange(ls, start, end)
+            start = end + 1
+        return ''.join(ls)
+        
+    # exchange the order of a single word
+    # end : the ending empty place of a word , or the length of the sentence 
+    def exchange(self, s, start, end):
+        end = end - 1
+        while(start < end):
+            s[start], s[end] = s[end], s[start]
+            start = start + 1
+            end = end -1
+    
+    #find next index of the current word's ending index , or the length of the sentence
+    def findWordEnding(self, s, start, leng):
+        while start < leng:
+            if (s[start] == ' ') :
+                return start
+            start = start + 1
+        if start == leng:
+            return start
+        return -1
+
+
+solution2:
+class Solution(object):
+    def reverseWords(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        return " ".join(map(lambda x: x[::-1], s.split()))
+

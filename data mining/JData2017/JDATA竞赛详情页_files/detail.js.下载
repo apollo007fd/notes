@@ -1,0 +1,1946 @@
+var myTeam = null, entered = false;// 是否报名
+$(function () {
+	$('.content').css('minHeight', $(window).height() - 502 + 'px');
+	//检测isLogin是否更新
+	function getLogin (call) {
+		if (isLogin) {
+			call();
+		}
+		else {
+			$.ajax({
+				"type" : "get",
+				"url" : "//passport.jd.com/loginservice.aspx?method=Login&callback=?",
+				"dataType" : "jsonp",
+				"timeout" : 2000,
+				"success" : function (data) {
+					isLogin = data.Identity.IsAuthenticated;
+					call();
+				}
+			});
+		}
+	}
+	//获取cookie
+	function getCookie(name) {
+		var arr = [], 
+			reg=new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+		if (arr = document.cookie.match(reg)){
+			return decodeURIComponent(arr[2]);
+		}
+		return '';
+	}
+	//获取url后参数
+	function getStr(str) {
+		//// detail_id.html
+		try {
+			if(str == 'id') {
+				var _r = /detail_\d{1,10}\.html$/i;
+				var _m = location.href.match(_r);
+				var _c = _m && _m[0] && _m[0].replace('detail_','').replace('.html', '');
+				if(_c) return _c;
+			}
+		} catch (e) {
+			console.error(e);
+		}
+		
+		
+		//// others
+		
+        var LocString = String(window.document.location.href);
+        var rs = new RegExp("(^|)" + str + "=([^\&]*)(\&|$)", "gi").exec(LocString), tmp;
+        if (tmp = rs) {
+            return tmp[2];
+        }
+        return "";
+    }
+	function setAjax(url, jsn, fn, callback) {
+		$.ajax({
+			"type" : "get",
+			"url" : inner + url,
+			"data" : jsn,
+			"dataType" : "json",
+			"timeout" : 1000,
+			"success" : function (data) {
+				fn(data);
+			},
+			"error" : function () {
+				callback();
+			}
+		});
+	}
+
+	//转化毫秒为日期
+	function define(time) {
+		var str =  new Date().getFullYear(time) + '/' + (new Date().getMonth(time) + 1) + '/' + new Date().getDate(time);
+		return str;
+	}
+	//详情页内容
+	var oId = getStr('id'),
+		stop = false,
+		teamType = 0,
+		memNum = 5,//默认队员数
+		result = '',//提交结果内容
+		number = 3;
+	//左侧列表第一项
+	function setText(index, i) {
+		setAjax("/comp/rtf", {"comp" : oId, "tab" : $('.normal').eq(index).data('tabid'), "t" : new Date().getTime()}, function (data) {
+			if (data.code === 200) {
+				$('.normal').eq(index).data('cont', true);
+				$('.cMess section').eq(index).html(data.data);
+			}
+			else if (data.code === 1) {
+				$('.mark, .reload').css('display', 'block');
+			}
+			else {
+				$('.fail').find('.fCont').html(data.message);
+				$('.mark, .fail').css('display', 'block');
+			}
+			if (entered) {
+				$('.jdata-download').show();
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .fail').css('display', 'none');
+				clearTimeout(timer);
+			}, 1000);
+		}, function () {
+			i--;
+			if (i > 0) {
+				setText(index, i);
+			}
+			else {
+				$('.mark, .reload').css('display', 'block');
+			}
+		});
+	}
+	//封装头部阶段及左侧列表
+	function getPart() {
+		setAjax("/comp/detail", {"comp" : oId, "t" : new Date().getTime()}, function (data) {
+			if (data.code == 200) {
+				teamType = data.data.info.type;
+				if (data.data.info.teamCapacity) {
+					memNum = data.data.info.teamCapacity;
+				}
+				if (teamType === 1) {
+					$('.file').attr('accept', '.zip');
+					$('.fileText').attr('placeholder', '请选择上传文件，支持zip文件，小于20M');
+				}
+				result = $('.tpContent').html();
+			    if (!(data.data && data.data.info && Object.getOwnPropertyNames(data.data.info).length > 0)) {
+			        location.href = 'list.html'; 
+			        return;
+			    }
+				var side = data.data.sidebars,
+					info = data.data.info,
+					str = '',
+					stop = info.stopTeam;
+				entered = data.data.entered;
+				//填充产品项
+				if (info.status == 0) {
+					$('.status').addClass('lFinish').html('已结束');
+					$('.join').addClass('out').removeClass('join').html('竞赛已结束');
+				}
+				else if (info.status == 1) {
+					$('.status').addClass('lRun').html('进行中');
+					Invite().setIng(true);
+				}
+				else if (info.status == 2) {
+					$('.status').addClass('lFinish').html('未开始');
+					$('.join').addClass('out').removeClass('join').html('竞赛未开始');
+				}
+				else if (info.status == 3) {
+					$('.status').addClass('lRun').html('进行中');
+					$('.join').addClass('out').removeClass('join').html('截止报名');
+				}
+				if (data.data.entered) {
+					$('.join').addClass('out').removeClass('join').html('已报名');
+					Invite().setEnter(true);
+				}
+				if (data.data.banned) {
+					$('.join').addClass('out').removeClass('join').html('禁赛中');
+				}
+				$('.lLeft img').attr('src', '//img30.360buyimg.com/test/s280x170_' + info.img);
+				$('.lrTit').html(info.name);
+				$('.path span').html(info.name);
+				$('.first').html(info.startTime + '开始');
+				$('.end').html(info.endTime + '结束');
+				$('.teamN').html(info.teamN);
+				$('.personN').html(info.userN);
+				$('.resultN').html(info.workN);
+				if (info.bonusType == 0) {
+					$('.rMoney').html('<i>￥</i>' + info.bonus);
+				} else if (info.bonusType == 1) {
+                    $('.rMoney').html('<i>$</i>' + info.bonus);
+				} else {
+                    $('.rMoney').html('<i>等值</i>' + info.bonus);
+				}
+				$('.rPic img').attr('src', '//img30.360buyimg.com/test/s220x35_' + info.sponsorLogo);
+				//阶段信息
+				var part = info.curNode,
+					num = info.nodeN,
+					arr = info.nodeList;
+				var list = '',
+					list2 = '',
+					dis = 500 / (num - 1);
+				for (var n = 0, len = num - 2; n < len; n++) {
+					list += '<li style="left: ' + dis * (n + 1) + 'px;"></li>';	
+					list2 += '<p>' + arr[n] + '</p>';		
+				}
+				$('.point').html(list);
+				$('.mess').html(list2);
+				if (part >= num) {
+					$('.red').css('width', '500px');
+					$('.first, .end').addClass('allRed');
+					$('.point li').addClass('pRed');
+				}
+				else if (part < num && part > 1) {
+					$('.first').addClass('allRed');
+					var big = Math.ceil(part), 
+						small = Math.floor(part);
+					for (var m = 1, mLen = small; m < mLen; m++) {
+						$('.point li').eq(m - 1).addClass('pRed');
+					}
+					if (big != small) {
+						$('.red').css('width', dis * (small - 1 + 0.5) + 'px');
+					}
+					else {
+						$('.red').css('width', dis * (part - 1) + 'px');
+						$('.point li').eq(small - 2).addClass('change').data('chg', true);
+					}
+				}
+				else {
+					$('.first').addClass('allRed');
+				}
+				$('.point').on('mouseover', '.pRed', function () {
+					var index = $(this).index(),
+						left = $(this).position().left,
+						width = $('.mess p').eq(index).outerWidth();
+					$(this).addClass('change');
+					$('.mess p').eq(index).css({"left" : left - width / 2 + 5 + 'px', "visibility" : "visible"});
+				});
+				$('.point').on('mouseout', '.pRed', function () {
+					if (!$(this).data('chg')) {
+						$(this).removeClass('change');
+					}		
+					$('.mess p').css({"visibility" : "hidden"});
+				});
+				for (var t = 0, tLen = side.length - 6; t < tLen; t++) {
+					$('.cMess section').eq(2).after('<section>');
+				}
+				//填充左侧栏
+				for (var i = 0, iLen = side.length; i < iLen; i++) {
+					if (side[i].children && side[i].children.length !== 0) {
+						if (side[i].type === 3) {
+							str += '<li class="especial esClick comManage" data-ibtn="true" data-type="' + side[i].type + '" data-tabid="' + side[i].tabId + '">' + side[i].name +
+									'<ul>';
+						}
+						else if (side[i].type === 2) {
+							str += '<li class="especial esClick myRanking" data-ibtn="true" data-type="' + side[i].type + '" data-tabid="' + side[i].tabId + '">' + side[i].name +
+									'<ul>';
+						}
+						else {
+							str += '<li class="especial esClick" data-ibtn="true" data-type="' + side[i].type + '" data-tabid="' + side[i].tabId + '">' + side[i].name +
+									'<ul>';
+						}
+						if (side[i].type === 2) {//排行榜逻辑
+							var str2 = $('section').eq(i).html(),
+								str3 = '';
+							for (var j = 0, jLen = side[i].children.length; j < jLen; j++) {
+								str += '<li data-type="' + side[i].type + '" data-tabid="' + side[i].children[j].tabId + '">' + side[i].children[j].name + '</li>';
+								str3 += str2;
+							}
+							$('section').eq(i).html(str3);
+						}
+						else if (side[i].type === 3) {
+							for (var j = 0, jLen = side[i].children.length; j < jLen; j++) {
+								if (side[i].children[j].tabId === 2) {
+									str += '<li class="myteam" data-type="' + side[i].type + '" data-tabid="' + side[i].children[j].tabId + '">' + side[i].children[j].name + '</li>';
+								}
+								else if (side[i].children[j].tabId === 1) {
+									if (info.status === 0) {
+										str += '<li style="display: none;" data-type="' + side[i].type + '" data-tabid="' + side[i].children[j].tabId + '">' + side[i].children[j].name + '</li>';
+									}
+									else {
+										str += '<li data-type="' + side[i].type + '" data-tabid="' + side[i].children[j].tabId + '">' + side[i].children[j].name + '</li>';
+									}
+								}
+								else {
+									str += '<li data-type="' + side[i].type + '" data-tabid="' + side[i].children[j].tabId + '">' + side[i].children[j].name + '</li>';
+								}
+							}
+						}
+						str += '</ul>' +
+									'</li>';
+					}
+					else {
+						if (i === 0) {
+							if (side[i].tabId === 0) {
+								str += '<li class="normal seeTeam active" data-type="' + side[i].type + '" data-tabid="' + side[i].tabId + '">' + side[i].name + '</li>';
+							}
+							else {
+								str += '<li class="normal active" data-type="' + side[i].type + '" data-tabid="' + side[i].tabId + '">' + side[i].name + '</li>';
+							}
+						}
+						else {
+							if (side[i].tabId === 0) {
+								str += '<li class="normal seeTeam" data-type="' + side[i].type + '" data-tabid="' + side[i].tabId + '">' + side[i].name + '</li>';
+							}
+							else {
+								if (side[i].type === 2) {
+									$('section').eq(i).remove();
+								}
+								else {
+									str += '<li class="normal" data-type="' + side[i].type + '" data-tabid="' + side[i].tabId + '">' + side[i].name + '</li>';
+								}
+							}
+							
+						}
+					}
+				}
+				$('.cLeft').html(str);
+				if (oId === "1") {
+					$('.especial, .seeTeam').css('display', 'none');
+				}
+				function manage() {
+					if (isLogin && data.data.entered) {
+						$('.comManage').css('display', 'block');
+					}
+					if (isLogin && getStr('tab') === 'myteam') {
+						$('.comManage').css('display', 'block');
+						$('.myteam').click();
+					}
+					else {
+						setText(0, 3);
+					}
+                    Invite().setLogin(isLogin);
+				}
+				getLogin(manage);
+
+				// 开通邀请功能
+                if (data.data.inviteStatus){
+                    Invite().setOpen(true);
+                }
+			}
+			else if (data.code === 1) {
+				$('.mark, .reload').css('display', 'block');
+			}
+			else {
+				$('.fail').find('.fCont').html(data.message);
+				$('.mark, .fail').css('display', 'block');
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .fail').css('display', 'none');
+				clearTimeout(timer);
+			}, 1000);
+		}, function () {
+			number--;
+			if (number > 0) {
+				getPart();
+			}
+			else {
+				$('.mark, .reload').css('display', 'block');
+			}
+		});
+	}
+	getPart();
+	//公告内容
+	setAjax("/notice/list", {"id" : oId, "t" : new Date().getTime()}, function (data) {
+		if (data.code == 200) {
+			if (data.data) {
+				$('.cmInf').css('display', 'block');
+				$('.cMove').html(data.data.dimension);
+				if (data.data.url === '' || !data.data.url) {
+					$('.cMore').css('display', 'none');
+				}
+				else {
+					$('.cMore a').attr('href', data.data.url);
+					$('.cMore').css('display', 'inline-block');
+				}
+			}
+			else {
+				$('.cmInf').css('display', 'none');
+			}			
+		}
+		else {
+			$('.cmInf').css('display', 'none');
+		}
+	});
+	//排行榜内容填充
+	//设置排行的tab
+	function setTab(index, tabId, i) {
+		//排行tab签
+		setAjax("/comp/topics", {"comp" : oId, "tab" : tabId, "t" : new Date().getTime()}, function (data) {
+			if (data.code === 200) {
+				var str = '',
+					html = $('.ranking').eq(index).find('.rkCont').html(),
+					htmlC = '';
+				data.data.map(function (item, i) {
+					if (i === 0) {
+						str += '<span data-cont="true" data-topic="' + item.topic + '" data-type="' + item.type + '" data-date="0" class="rkAct">' + item.name + '</span>';
+					}
+					else {
+						str += '<span data-date="0" data-topic="' + item.topic + '" data-type="' + item.type + '">' + item.name + '</span>';
+					}
+					if (!$('.myRanking').find('li').eq(index).data('ibtn')) {
+						htmlC += html;
+					}
+				});
+				$('.ranking').eq(index).find('.rkList').html(str);
+				if (!$('.myRanking').find('li').eq(index).data('ibtn')) {
+					$('.ranking').eq(index).find('.rkCont').html(htmlC);
+					$('.myRanking').find('li').eq(index).data('ibtn', true);
+				}
+				$('.ranking').eq(index).find('.rkc').eq(0).css('display', 'block').siblings('.rkc').css('display', 'none');
+				var ty = $('.ranking').eq(index).find('.rkAct').data('type'),
+					topic = $('.ranking').eq(index).find('.rkAct').data('topic');
+				setRank(index, tabId, ty, topic);
+			}
+			else if (data.code === 1) {
+				$('.mark, .reload').css('display', 'block');
+			}
+			else {
+				$('.fail').find('.fCont').html(data.message);
+				$('.mark, .fail').css('display', 'block');
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .fail').css('display', 'none');
+				clearTimeout(timer);
+			}, 1000);
+		}, function () {
+			i--;
+			if (i > 0) {
+				setTab(index, tabId, i);
+			}
+			else {
+				$('.mark, .reload').css('display', 'block');
+			}
+		});
+	}
+	function setRank(index, tabId, type, topic) {
+		//全部时间
+		setAjax("/comp/weeks", {"comp" : oId, "tab" : tabId, "topic" : topic, "type" : type, "t" : new Date().getTime()}, function (data) {
+			if (data.code == 200) {
+				//最终排名前10者为入围名单
+				if (data.btn) {
+					$('.ranking').eq(index).find('.rkcEnd').eq(0).css('display', 'inline-block');
+				}
+				var str = '<option value="0">全部时间</option>';
+				data.data.map(function (item, i) {
+					str += '<option value="' + item.no + '">' + item.name + '</option>';
+				});
+				$('.ranking').eq(index).find('.timeR').eq(0).html(str);
+			}
+		});
+		//排行榜分页
+		$('.ranking').eq(index).find('.firstPage').eq(0).off('click');
+		$('.ranking').eq(index).find('.prevPage').eq(0).off('click');
+		$('.ranking').eq(index).find('.nextPage').eq(0).off('click');
+		$('.ranking').eq(index).find('.lastPage').eq(0).off('click');
+		$('.ranking').eq(index).find('.pageObj').eq(0).off('click').html('').find('li').eq(0).addClass('active').siblings('li').removeClass('active');
+		$('.ranking').eq(index).find('.pageBox').eq(0).pageFun({/*在本地服务器上才能访问哦*/
+			interFace : inner + '/comp/rank',  /*接口*/
+			jsn : {"comp" : oId, "tab" : tabId, 'type' : type, "topic" : topic, "t" : new Date().getTime()},
+			displayCount : 10,  /*每页显示总条数*/
+			maxPage : 5,/*每次最多加载多少页*/
+			dataFun : function (data) {
+				var dataHtml = '';
+				if (oId == '1') {
+					for (var i = 0, len = data.length; i < len; i++) {
+						if (data[i].teamName) {
+							dataHtml += '<li class="pageList">' +
+											'<span class="ps">';
+							if (data[i].rankNo < 4) {
+								dataHtml += '<span class="pdNum pdRed">' + data[i].rankNo + '</span>';
+							}
+							else {
+								dataHtml += '<span class="pdNum">' + data[i].rankNo + '</span>';
+							}
+							dataHtml += '</span>' +
+										'<span class="ps2">' +
+											'<span class="pdImg"><img src="//img30.360buyimg.com/test/s100x100_' + data[i].teamIcon + '" /></span>' +
+											'<span class="pdTit">' + data[i].teamName + '</span>' +
+											'<span class="pdTeam">' +
+												'<div class="pdtMem">' +
+													'<i></i>';
+							for (var j = 0, jLen = data[i].users.length; j < jLen; j++) {
+								if (data[i].users[j].status == 1 && isLogin) {
+									dataHtml += '<p><a href="person.html?id=' + data[i].users[j].id + '">' + data[i].users[j].name + '</a></p>';
+								}
+								else {
+									dataHtml += '<p><a href="javascript:;">' + data[i].users[j].name + '</a></p>';
+								}						
+							}
+							dataHtml += '</div>' +
+									'</span>' +
+								'</span>' +
+								'<span class="ps3">' + data[i].score + '</span>';
+							if (data[i].optimalTime && data[i].optimalTime.includes('-') && data[i].optimalTime.includes(':')) {
+								dataHtml += '<span class="ps4">' + data[i].optimalTime + '</span>';
+							}
+							else {
+								dataHtml += '<span class="ps4">--</span>';
+							}
+							dataHtml += '</li>';
+						}	
+					}
+				}
+				else {
+					for (var i = 0, len = data.length; i < len; i++) {
+						if (data[i].teamName) {
+							dataHtml += '<li class="pageList">' +
+											'<span class="pd">';
+							if (data[i].rankNo < 4) {
+								dataHtml += '<span class="pdNum pdRed">' + data[i].rankNo + '</span>';
+							}
+							else {
+								dataHtml += '<span class="pdNum">' + data[i].rankNo + '</span>';
+							}
+							var change = data[i].rankNo;
+							if (data[i].preRankNo) {
+								change = data[i].rankNo - data[i].preRankNo;
+							}
+							if (data[i].preRankNo && change > 0) {
+								dataHtml += '<span class="pdDown"><i>' + change + '</i></span>';
+							}
+							else if (data[i].preRankNo && change < 0) {
+								dataHtml += '<span class="pdUp"><i>' + (-1 * change) + '</i></span>';
+							}
+							/*else {
+								dataHtml += '<span class="pdNor">—</span>';
+							}*/
+							dataHtml += '</span>' +
+										'<span class="pd2">' +
+											'<span class="pdImg"><img src="//img30.360buyimg.com/test/s100x100_' + data[i].teamIcon + '" /></span>' +
+											'<span class="pdTit">' + data[i].teamName + '</span>' +
+											'<span class="pdTeam">' +
+												'<div class="pdtMem">' +
+													'<i></i>';
+							for (var j = 0, jLen = data[i].users.length; j < jLen; j++) {
+								if (data[i].users[j].status == 1 && isLogin) {
+									dataHtml += '<p><a href="person.html?id=' + data[i].users[j].id + '">' + data[i].users[j].name + '</a></p>';
+								}
+								else {
+									dataHtml += '<p><a href="javascript:;">' + data[i].users[j].name + '</a></p>';
+								}						
+							}
+							dataHtml += '</div>' +
+									'</span>' +
+								'</span>' +
+								'<span class="pd4">' + data[i].score + '<i>' + data[i].score + '</i></span>' +
+								'<span class="pd5">' + data[i].submitCount + '</span>' +
+								'<span class="pd6">';
+								if (data[i].optimalTime && data[i].optimalTime.includes('-') && data[i].optimalTime.includes(':')) {
+									dataHtml += '<span>' + data[i].optimalTime + '</span>';
+								}
+								else {
+									dataHtml += '<span>--</span>';
+								}
+							dataHtml += '</span>' +
+								'<span class="pd7">';
+								if (data[i].lastTime && data[i].lastTime.includes('-') && data[i].lastTime.includes(':')) {
+									dataHtml += '<span>' + data[i].lastTime + '</span>';
+								}
+								else {
+									dataHtml += '<span>--</span>';
+								}						
+							dataHtml += '</span>' +
+								'</li>';
+						}	
+					}
+				}
+				return dataHtml;
+			},
+			pageFun : function (i) {
+				var pageHtml = '';
+				if (i === 1) {
+					pageHtml = '<li class="pageNum active">' + i + '</li>';
+				}
+				else {
+					pageHtml = '<li class="pageNum">' + i + '</li>';
+				}			
+				return pageHtml;
+			}
+		});
+	}
+	//参赛队伍分页
+	function checkTeam(status, name) {
+		if (!name) {
+			name = '';
+		}
+		$('.teams').next('.pageBox').find('.firstPage').off('click');
+		$('.teams').next('.pageBox').find('.prevPage').off('click');
+		$('.teams').next('.pageBox').find('.nextPage').off('click');
+		$('.teams').next('.pageBox').find('.lastPage').off('click');
+		$('.teams').next('.pageBox').find('.pageObj').off('click').html('');
+		$('.teamList').parent('.pageBox').pageFun({/*在本地服务器上才能访问哦*/
+			interFace : inner + '/team/list',  /*接口*/
+			jsn : {"comp" : oId, "status" : status, "name" : name, "t" : new Date().getTime()},
+			displayCount : 10,  /*每页显示总条数*/
+			maxPage : 5,/*每次最多加载多少页*/
+			pageSize : 9,
+			record : 3,
+			dataFun : function (data) {
+				var dataHtml = '',
+					num = 1000;
+				for (var i = 0, len = data.length; i < len; i++) {
+					if (data[i].jdataTeam.status === 0) {//进行中
+						dataHtml += '<li class="joining" style="z-index: ' + (num - i) + '">';
+					}
+					else if (data[i].jdataTeam.status === 2) {//停止招募
+						dataHtml += '<li class="stopping">';
+					}
+					else if (data[i].jdataTeam.status === 4) {//满员
+						dataHtml += '<li class="fulling">';
+					}
+					dataHtml += '<div class="teamMark">' +
+									'<div class="teamTop">' +
+										'<p class="tmtPic"><img src="//img30.360buyimg.com/test/s100x100_' + data[i].jdataTeam.icon + '" /></p>' +
+										'<p class="tmtName">' +
+											'<span class="tmtn">' + data[i].jdataTeam.name + '</span>';
+					if (!data[i].jdataTeam.des) {
+						dataHtml += '<span>暂无介绍</span>';
+					}
+					else {
+						dataHtml += '<span>' + data[i].jdataTeam.des + '</span>';
+					}
+					dataHtml += '</p>' +
+									'</div>' +
+									'<div class="teamMem">' +
+										'<p class="tmmTit">队员（' + data[i].jdataTeamUserInfos.length + '/' + data[i].maxMemberNum + '）：</p>' +
+										'<p class="tmmImg">';
+					data[i].jdataTeamUserInfos.map(function (item, i) {
+						if (item.jdataUser.status === 1) {
+							if (item.jdataUser.yn === 0 || !isLogin) {
+								dataHtml += '<span class="tmmact"><a href="javascript:;"><img src="//img30.360buyimg.com/test/s100x100_' + item.jdataUser.icon + '"></a><i>' + item.jdataUser.name + '</i></span>';
+							}
+							else {
+								dataHtml += '<span class="tmmact"><a target="_blank" href="person.html?id=' + item.jdataUser.id + '"><img src="//img30.360buyimg.com/test/s100x100_' + item.jdataUser.icon + '"></a><i>' + item.jdataUser.name + '</i></span>';
+							}
+						}
+						else {
+							if (item.jdataUser.yn === 0 || !isLogin) {
+								dataHtml += '<span><a href="javascript:;"><img src="//img30.360buyimg.com/test/s100x100_' + item.jdataUser.icon + '"></a><i>' + item.jdataUser.name + '</i></span>';
+							}
+							else {
+								dataHtml += '<span><a href="person.html?id=' + item.jdataUser.id + '"><img src="//img30.360buyimg.com/test/s100x100_' + item.jdataUser.icon + '"></a><i>' + item.jdataUser.name + '</i></span>';
+							}
+						}
+					});
+					dataHtml += '</p>' +
+							'</div>' +
+							'<div class="teamSkill">' +
+								'<p class="tmmTit2">需求技能：</p>' +
+								'<p class="tmmTab">';
+					if (!data[i].jdataTeam.needSkill) {
+						dataHtml += '<span>暂无需求</span>';
+					}
+					else {
+						var needSkill = JSON.parse(data[i].jdataTeam.needSkill);
+						if (needSkill.length === 0) {
+							dataHtml += '<span>暂无需求</span>';
+						}
+						else {
+							needSkill.map(function (item, i) {
+								dataHtml += '<span>' + item.skill2 + '</span>';
+							});
+						}
+					}
+					dataHtml += '</p>' +
+							'</div>' +
+							'<div class="teamReq">' +
+								'<p class="tmmTit3">需求队员：</p>' +
+								'<p class="tmmTab">';
+					if (!data[i].jdataTeam.needMember) {
+						dataHtml += '<span>暂无需求</span>';
+					}
+					else {
+						var needMember = JSON.parse(data[i].jdataTeam.needMember);
+						if (needMember.length === 0) {
+							dataHtml += '<span>暂无需求</span>';
+						}
+						else {
+							needMember.map(function (item, i) {
+								dataHtml += '<span>' + item.skill2 + '</span>';
+							});
+						}
+					}
+					dataHtml += '</p>' +
+							'</div>';
+					if (data[i].jdataTeam.status === 0) {
+						if (stop || !isLogin) {
+							dataHtml += '<p class="teamGray" data-teamid="' + data[i].jdataTeam.id + '"><span>加入他们</span></p>';
+						}
+						else {
+							dataHtml += '<p class="teamAdd" data-teamid="' + data[i].jdataTeam.id + '"><span>加入他们</span></p>';
+						}
+					}
+					dataHtml += '</div>' +
+							'</li>';
+				}
+				return dataHtml;
+			},
+			pageFun : function (i) {
+				var pageHtml = '';
+				if (i === 1) {
+					pageHtml = '<li class="pageNum active">' + i + '</li>';
+				}
+				else {
+					pageHtml = '<li class="pageNum">' + i + '</li>';
+				}			
+				return pageHtml;
+			}
+		});
+	}
+	//提交结果——赛题列表
+	function setResult(i) {
+		setAjax("/topic/topicList", {"comp" : oId, "t" : new Date().getTime()}, function (data) {
+			if (data.code === 200) {
+				var str = '',
+					cont = '';
+				data.data.map(function (item, i) {
+					if (i === 0) {
+						str += '<li class="tpAct" data-cont="true" data-topic="' + item.id + '" data-season="' + item.seasonId + '">' + item.name + '</li>';
+					}
+					else {
+						str += '<li data-topic="' + item.id + '" data-season="' + item.seasonId + '">' + item.name + '</li>';
+					}
+					cont += result;
+				});
+				$('.topic').html(str);
+				$('.tpContent').html(cont);
+				data.data.map(function (item, i) {
+					$('.fmsDes').eq(i).find('i').html(item.leftTimes);
+					$('.fileLoad').eq(i).attr('href', item.tplUrl || 'javascript:void(0);');
+					if (!item.canUpload) {
+						$('.fmsRun').eq(i).addClass('fmsEnd').removeClass('fmsRun');
+					}
+				});
+				$('.tpSend').eq(0).css('display', 'block');
+				$('.tplTit').eq(0).html('提交记录');
+				subResult(0, 0, $('.tpAct').data('topic'), $('.tpAct').data('season'), 0);
+			}
+			else if (data.code === 1) {
+				$('.mark, .reload').css('display', 'block');
+			}
+			else if (data.code === 30) {//赛季未开始
+				var strNone = '<p class="tpNone"></p>' +
+							'<p class="tpTit">结果提交未开始</p>';
+				$('.tpContent').html(strNone);
+			}
+			else if (data.code === 2) {//未补全信息
+				$('.mark, .toComplete').css('display', 'block');
+			}
+			else {
+				$('.fail').find('.fCont').html(data.message);
+				$('.mark, .fail').css('display', 'block');
+				var timer = setTimeout(function () {
+					$('.mark, .fail').css('display', 'none');
+					clearTimeout(timer);
+				}, 1000);
+			}			
+		}, function () {
+			i--;
+			if (i > 0) {
+				setResult(i);
+			}
+			else {
+				$('.mark, .reload').css('display', 'block');
+			}
+		});
+	}
+	//结果记录分页
+	function subResult(index, index2, topic, season, type) {
+		$('.tpSend').eq(index).find('.pageObj').eq(index2).find('li').eq(0).addClass('active').siblings('li').removeClass('active');
+		$('.tpSend').eq(index).find('.pageBox').eq(index2).pageFun({/*在本地服务器上才能访问哦*/
+			interFace : inner + '/topic/answerList',  /*接口*/
+			jsn : {"comp" : oId, "topic" : topic, "season" : season, "type" : type, "t" : new Date().getTime()},
+			displayCount : 10,  /*每页显示总条数*/
+			maxPage : 5,/*每次最多加载多少页*/
+			record : 3,
+			dataFun : function (data) {
+				var dataHtml = '';
+				data.map(function (item, i) {
+					dataHtml += '<li class="srList">' +
+								'<span class="sr">' + item.id + '</span>';
+					dataHtml += '<span class="sr3">'+item.remark+'</span>';
+					if (item.totalScore || item.totalScore === 0) {
+						dataHtml += '<span class="sr4" title="' + item.totalScore + '">' + item.totalScore + '</span>';
+					}
+					else {
+						dataHtml += '<span class="sr4">--</span>';
+					}
+					dataHtml += '<span class="sr6"><span>' + item.fileName + '</span></span>' +
+								'<span class="sr7">' + item.des + '<i>' + item.des + '</i></span>' +
+								'<span class="sr8"><span>' + item.name + '</span></span>' +
+								'<span class="sr9"><span>' + item.createTime + '</span></span>' +
+							'</li>';
+				});				
+				return dataHtml;
+			},
+			pageFun : function (i) {
+				var pageHtml = '';
+				if (i === 1) {
+					pageHtml = '<li class="pageNum active">' + i + '</li>';
+				}
+				else {
+					pageHtml = '<li class="pageNum">' + i + '</li>';
+				}			
+				return pageHtml;
+			}
+		});
+	}
+	//我的队伍各种身份展示
+	function setmyTeam(i) {
+		$.ajax({
+			"type" : "get",
+			"url" : inner + '/team/info',
+			"data" : {"comp" : oId, "t" : new Date().getTime()},
+			"dataType" : "json",
+			"timeout" : 1000,
+			"success" : function (data) {
+				if (data.code == 200) {
+					function unique(array) { 
+						var n = [array[0]];
+						for(var i = 1; i < array.length; i++) {  
+							if (array.indexOf(array[i]) == i) {
+								n.push(array[i]);
+							}
+						} 
+						return n; 
+					}
+					var data = data.data,
+						tmNum = '（<i>' + data.jdataTeamUserInfos.length + '</i>/' + memNum + '）';
+					if (data.jdataTeam.type === 0) {//个人未组队
+						$('.single').css('display', 'block');
+						$('.person').css('display', 'none');
+						$('.caption').css('display', 'none');
+						$('.sgtPic img').attr('src', '//img20.360buyimg.com/test/s100x100_' + data.jdataTeam.icon);
+						$('.sgttName').html(data.jdataTeam.name);
+						if (stop) {
+							$('.sgTeam').css('display', 'none');
+						}
+					}
+					else if (data.jdataTeam.type === 1) { //个人已组队
+						$('.person').css('display', 'block');
+						$('.single').css('display', 'none');
+						$('.caption').css('display', 'none');
+						$('.person').find('.perInfo img').attr('src', '//img20.360buyimg.com/test/s100x100_' + data.jdataTeam.icon);
+						if (data.jdataTeam.status === 0) {
+							$('.person').find('.infSta span').html('开放招募');
+						}
+						else if (data.jdataTeam.status === 1) {
+							$('.person').find('.infSta span').html('解散');
+						}
+						else if (data.jdataTeam.status === 2) {
+							$('.person').find('.infSta span').html('停止招募');
+						}
+						$('.person').find('.infInt span').html(data.jdataTeam.des);
+						$('.person').find('.tmNums').html(tmNum);
+						var arr = [],
+							arr2 = data.jdataTeamUserInfos,
+							arr3 = [],
+							arr4 = [],
+							local = '',
+							skill = '',
+							member = '',
+							str = '',
+							pin = getCookie('pin');
+						for (var i = 0; i < arr2.length; i++) {
+							if (arr2[i].jdataUser.pin === getCookie('pin')) {
+								arr3.push(arr2[i]);
+								arr2.splice(i, 1);
+								i--;
+							} 
+							else if (arr2[i].jdataUser.status === 1) {
+								arr4.push(arr2[i]);
+								arr2.splice(i, 1);
+								i--;
+							}
+						}
+						arr2 = arr3.concat(arr4, arr2);
+						for (var n = 0, nLen = arr2.length; n < nLen; n++) {
+							arr.push(arr2[n].jdataUser.address);
+						}
+						if (data.jdataTeam.needSkill) {
+							var needSkill = JSON.parse(data.jdataTeam.needSkill);
+							for (var j = 0, jLen = needSkill.length; j < jLen; j++) {
+								skill += ',' + needSkill[j].skill2;
+							}
+							skill = skill.substring(1);
+						}
+						else {
+							skill = '暂无信息';
+						}
+						if (data.jdataTeam.needMember) {
+							var needMember = JSON.parse(data.jdataTeam.needMember);
+							for (var k = 0, kLen = needMember.length; k < kLen; k++) {
+								member += ',' + needMember[k].skill2;
+							}
+							member = member.substring(1);
+						}
+						else {
+							member = '暂无信息';
+						}
+						local = unique(arr).join(',');
+						$('.person').find('.nPer').html(data.jdataTeam.name + '<span>' + local + '</span>');
+						$('.person').find('.infSkill span').html(skill);
+						$('.person').find('.infMem span').html(member);
+						arr2.map(function (item, i) {
+							str += '<li>';
+							if (item.jdataUser.status === 1) {//队长
+								str += '<p class="tmlIcon">队长</p>';
+							}
+							str += '<p class="tmlPic"><a href="person.html?id=' + item.jdataUser.id + '"><img src="//img20.360buyimg.com/test/s100x100_' + item.jdataUser.icon + '" /></a></p>' +
+									'<p class="tmlName">' + item.jdataUser.name + '</p>' +
+									'<p class="tmlLoc"><span>' + item.jdataUser.address + '</span></p>' +
+									'<p class="tmlSkill">技能：' +
+										'<label>';
+							if (item.jdataUser.skill) {
+								var uSkill = JSON.parse(item.jdataUser.skill);
+								uSkill.map(function (item, i) {
+									str += '<span>' + item.skill2 + '</span>';
+								});
+							}
+							else {
+								str += '<span>暂无技能</span>';
+							}
+							str += '</label>' +
+									'</p>' +
+									'<p class="tmlIde">身份：';
+							if (item.jdataUser.career === 0) {
+								str += '<span>学生</span>';
+							}		
+							else if (item.jdataUser.career === 1) {
+								str += '<span>教师</span>';
+							}
+							else if (item.jdataUser.career === 2) {
+								str += '<span>企业员工</span>';
+							}	
+							else if (item.jdataUser.career === 3) {
+								str += '<span>其他</span>';
+							}
+							str += '</p>';									
+							if (i === 0) {//自己
+								str += '<p class="tmlBtn">' +
+											'<span class="tmlbE"><a href="center.html"><span>编辑个人信息</span></a></span>';
+								if (stop) {
+									str += '</p>';
+								}
+								else {
+									str += '<span class="tmlbO" data-team="' + data.jdataTeam.id + '"><span>退出</span></span>' +
+										'</p>';
+								}	
+							}
+							str += '</li>';
+						});
+						$('.person').find('.tmLists').html(str);
+					}
+					else if (data.jdataTeam.type === 2) {//队长
+					    myTeam = data.jdataTeam;
+						$('.caption').css('display', 'block');
+						$('.single').css('display', 'none');
+						$('.person').css('display', 'none');
+						$('.caption').find('.capInfo img').attr('src', '//img20.360buyimg.com/test/s100x100_' + data.jdataTeam.icon);
+						if (data.jdataTeam.status === 0) {
+							$('.caption').find('.infSta span').html('开放招募');
+						}
+						else if (data.jdataTeam.status === 1) {
+							$('.caption').find('.infSta span').html('解散');
+						}
+						else if (data.jdataTeam.status === 2) {
+							$('.caption').find('.infSta span').html('停止招募');
+						}
+						$('.caption').find('.infInt span').html(data.jdataTeam.des);
+						$('.caption').find('.tmNums').html(tmNum);
+						$('.caption').find('.tmmDe').data('team', data.jdataTeam.id);
+						var arr = [],
+							arr2 = data.jdataTeamUserInfos,
+							arr3 = [],
+							local = '',
+							skill = '',
+							member = '',
+							str = '',
+							pin = getCookie('pin');
+						for (var i = 0, len = arr2.length; i < len; i++) {
+							if (data.jdataTeamUserInfos[i].jdataUser.status === 1) {
+								arr3.push(data.jdataTeamUserInfos[i]);
+								arr2.splice(i, 1);
+								break;
+							}
+						}
+						arr2 = arr3.concat(arr2);
+						for (var n = 0, nLen = arr2.length; n < nLen; n++) {
+							arr.push(arr2[n].jdataUser.address);
+						}
+						if (data.jdataTeam.needSkill) {
+							var needSkill = JSON.parse(data.jdataTeam.needSkill);
+							for (var j = 0, jLen = needSkill.length; j < jLen; j++) {
+								skill += ',' + needSkill[j].skill2;
+							}
+							skill = skill.substring(1);
+						}
+						else {
+							skill = '暂无信息';
+						}
+						if (data.jdataTeam.needMember) {
+							var needMember = JSON.parse(data.jdataTeam.needMember);
+							for (var k = 0, kLen = needMember.length; k < kLen; k++) {
+								member += ',' + needMember[k].skill2;
+							}
+							member = member.substring(1);
+						}
+						else {
+							member = '暂无信息';
+						}
+						local = unique(arr).join(',');								
+						$('.caption').find('.nPer').html(data.jdataTeam.name + '<span>' + local + '</span>');
+						$('.caption').find('.infSkill span').html(skill);
+						$('.caption').find('.infMem span').html(member);
+						var html = '';
+						arr2.map(function (item, i) {
+							html += '<li>';
+							if (item.jdataUser.status === 1) {//队长
+								html += '<p class="tmlIcon">队长</p>' +
+										'<p class="tmlPic"><a href="person.html?id=' + item.jdataUser.id + '"><img src="//img20.360buyimg.com/test/s100x100_' + item.jdataUser.icon + '" /><i></i></a></p>';
+							}
+							else {
+								html += '<p class="tmlPic"><a href="person.html?id=' + item.jdataUser.id + '"><img src="//img20.360buyimg.com/test/s100x100_' + item.jdataUser.icon + '" /></a></p>';
+							}
+							html += '<p class="tmlName">' + item.jdataUser.name + '</p>' +
+									'<p class="tmlLoc"><span>' + item.jdataUser.address + '</span></p>' +
+									'<p class="tmlSkill">技能：' +
+										'<label>';
+							if (item.jdataUser.skill) {
+								var uSkill = JSON.parse(item.jdataUser.skill);
+								uSkill.map(function (item, i) {
+									html += '<span>' + item.skill2 + '</span>';
+								});
+							}
+							else {
+								html += '<span>暂无技能</span>';
+							}
+							html += '</label>' +
+									'</p>' +
+									'<p class="tmlIde">身份：';
+							if (item.jdataUser.career === 0) {
+								html += '<span>学生</span>';
+							}		
+							else if (item.jdataUser.career === 1) {
+								html += '<span>教师</span>';
+							}
+							else if (item.jdataUser.career === 2) {
+								html += '<span>企业员工</span>';
+							}	
+							else if (item.jdataUser.career === 3) {
+								html += '<span>其他</span>';
+							}
+							html += '</p>';
+							if (item.jdataUser.status === 1) {//队长
+								html += '<p class="tmlBtn">' +
+											'<span class="capEdit"><a href="center.html"><span>编辑个人信息</span></a></span>' +
+										'</p>';
+							}
+							else {
+								if (!stop) {
+									html += '<p class="tmlBtn">' +
+											'<span class="tmlbSet" data-user="' + item.jdataUser.id + '" data-team="' + data.jdataTeam.id + '"><span>设为队长</span></span>' +
+											'<span class="tmlbRe" data-user="' + item.jdataUser.id + '" data-team="' + data.jdataTeam.id + '"><span>移除队友</span></span>' +
+										'</p>';
+								}
+							}
+							html += '</li>';
+						});
+						if (arr2.length < memNum && !stop) {
+							html += '<li class="inviteMem">' +
+										'<p class="tmlAdd" data-team="' + data.jdataTeam.id + '">+</p>' +
+										'<p class="tmlInvite">邀请队员</p>' +
+									'</li>';
+						}
+						$('.caption').find('.tmLists').html(html);
+					}
+				}
+				else if (data.code === 1) {
+					$('.mark, .reload').css('display', 'block');
+				}
+				else {
+					$('.fail').find('.fCont').html(data.message);
+					$('.mark, .fail').css('display', 'block');
+				}
+				var timer = setTimeout(function () {
+					$('.mark, .fail').css('display', 'none');
+					clearTimeout(timer);
+				}, 1000);
+			},
+			"error" : function () {
+				i--;
+				if (i > 0) {
+					setmyTeam(i);
+				}
+				else {
+					window.location.reload();
+				}
+			}
+		});
+	}
+	//报名参赛
+	$('.part').on('click', '.join', function () {
+		$('.read input').prop('checked', false);
+		$('.joinSure').removeClass('joinSure').addClass('joinGary');
+		$('.mark, .joinCom').css('display', 'block');
+	});
+	$('.joinClose, .joinCancel').on('click', function () {
+		$('.mark, .joinCom').css('display', 'none');
+	});
+	$('.read input').on('click', function () {
+		if (this.checked) {
+			$('.joinGary').removeClass('joinGary').addClass('joinSure');
+		}
+		else {
+			$('.joinSure').removeClass('joinSure').addClass('joinGary');
+		}
+	});
+	$('.appBtn').on('click', '.joinSure', function () {
+		setAjax("/team/enter", {"comp" : oId, "t" : new Date().getTime()}, function (data) {
+			if (data.code === 200) {
+				$('.mark, .joinCom').css('display', 'none');
+				$('.comManage').css('display', 'block');
+				$('.join').removeClass('join').addClass('out').html('已报名');
+				$('.myteam').click();
+			}
+			else if (data.code === 1) {
+				$('.joinCom').css('display', 'none');
+				$('.fail').css('display', 'block').find('.fCont').html('系统异常，请稍后再试');
+				var timer = setTimeout(function () {
+					$('.mark, .fail').css('display', 'none');
+					clearTimeout(timer);
+				}, 1000);
+			}
+			else if (data.code === 2) {
+				$('.joinCom').css('display', 'none');
+				window.location.href = '/user/complete?comp=' + oId;
+			}
+			else if (data.code === 3) {
+				$('.joinCom').css('display', 'none');
+				$('.joinSure').removeClass('joinSure').addClass('joinGary');
+				$('.toCheck').css('display', 'block');
+			}
+		});
+	});
+	//去实名认证
+	$('.toSet').on('click', function () {
+		$('.mark, .toCheck').css('display', 'none');
+		window.location.href = "//authpay.jd.com/auth/toAuthPage?source=412&directReturnUrl=" + encodeURIComponent(window.location.href);
+	});
+	$('.toClose').on('click', function () {
+		$('.mark, .toCheck').css('display', 'none');
+	});
+	//左侧分类	
+	//普通分类
+	$('.cLeft').on('click', '.normal', function () {
+		var index = $(this).index(),
+			tabId = $(this).data('tabid'),
+			type = $(this).data('type'),
+			That = $(this);
+		$(this).addClass('active');
+		$(this).siblings('.normal').removeClass('active');
+		$('.cMess section').eq(index).css('display', 'block');
+		$('.cMess section').eq(index).siblings('section').css('display', 'none');
+		$('.esClick li').removeClass('select');
+		if (type == '2') {//单行排行榜逻辑 
+			if (oId == '1') {
+				$('.pageTit').css('display', 'none');
+				$('.pagePar').css('display', 'block');
+			}
+			else {
+				$('.pageTit').css('display', 'block');
+				$('.pagePar').css('display', 'none');
+			}
+			var aS = $('.cMess section').eq(index);
+			aS.find('.ranking').css('display', 'block');
+			setTab(0, tabId, 3);
+		}
+		else if (type == '4') {//参赛队伍
+			var val = $('.tmList').val();
+			checkTeam(val, '');
+		}
+		else {
+			if (!$(this).data('cont')) {
+				setText(index, 3);
+			}
+		}	
+	});
+	//有子分类的分类
+	$('.cLeft').on('click', '.especial', function () {
+		if ($(this).data('ibtn')) {
+			$(this).data('ibtn', false).removeClass('esClick');
+		}
+		else {
+			$(this).data('ibtn', true).addClass('esClick');
+		}
+	});
+	$('.cLeft').on('mouseover', '.especial', function () {
+		$(this).css({'backgroundColor' : '#fff', 'color' : '#f44440'});
+	});
+	$('.cLeft').on('mouseout', '.especial', function () {
+		$(this).css({'backgroundColor' : '#fafafa', 'color' : '#666'});
+	});
+	$('.cLeft').on('mouseenter', '.esClick li', function () {
+		return false;
+	});
+	$('.cLeft').on('click', '.esClick li', function () {
+		var index = $(this).index(),
+			index2 = $(this).parents('.esClick').index(),
+			tabId = $(this).data('tabid'),
+			type = $(this).data('type');
+		$('.normal').removeClass('active');
+		$('.especial li').removeClass('select');
+		$(this).addClass('select');
+		$('.cMess section').eq(index2).css('display', 'block');
+		$('.cMess section').eq(index2).siblings('section').css('display', 'none');
+		if (type == '2') { //A、B等榜
+			$('.cMess section').eq(index2).find('.ranking').css('display', 'none');
+			$('.cMess section').eq(index2).find('.ranking').eq(index).css('display', 'block');
+			if (oId == '1') {
+				$('.pagePar').css('display', 'block');
+				$('.pageTit').css('display', 'none');
+			}
+			else {
+				$('.pageTit').css('display', 'block');
+				$('.pagePar').css('display', 'none');
+			}
+			setTab(index, tabId, 3);
+		}
+		else if (type == '3') { //竞赛管理
+			$('.cMess section').eq(index2).find('.message').css('display', 'none');
+			$('.cMess section').eq(index2).find('.message').eq(index).css('display', 'block');
+			if (tabId == '1') {//提交结果
+				setResult(3);
+			}
+			else if (tabId == '3') {//资料提交
+			} 
+			else if (tabId == '2') {//我的队伍
+				//展示何种身份的信息
+				setmyTeam(3);	
+			}
+		}		
+		return false;
+	});
+	//同一榜下的总榜及分榜
+	function setPage(index, index2, tabId, tp, day, topic) {
+		//排行榜分页
+		$('.ranking').eq(index2).find('.firstPage').eq(index).off('click');
+		$('.ranking').eq(index2).find('.prevPage').eq(index).off('click');
+		$('.ranking').eq(index2).find('.nextPage').eq(index).off('click');
+		$('.ranking').eq(index2).find('.lastPage').eq(index).off('click');
+		$('.ranking').eq(index2).find('.pageObj').eq(index).off('click').html('').find('li').eq(0).addClass('active').siblings('li').removeClass('active');
+		$('.ranking').eq(index2).find('.pageBox').eq(index).pageFun({/*在本地服务器上才能访问哦*/
+			interFace : inner + '/comp/rank',  /*接口*/
+			jsn : {"comp" : oId, "tab" : tabId, "type" : tp, "subType" : day, "topic" : topic, "t" : new Date().getTime()},
+			displayCount : 10,  /*每页显示总条数*/
+			maxPage : 5,/*每次最多加载多少页*/
+			record : 3,
+			dataFun : function (data) {
+				var dataHtml = '';
+				if (oId == '1' || day != '0') {
+					for (var i = 0, len = data.length; i < len; i++) {
+						if (data[i].teamName) {
+							dataHtml += '<li class="pageList">' +
+											'<span class="ps">';
+							if (data[i].rankNo < 4) {
+								dataHtml += '<span class="pdNum pdRed">' + data[i].rankNo + '</span>';
+							}
+							else {
+								dataHtml += '<span class="pdNum">' + data[i].rankNo + '</span>';
+							}
+							dataHtml += '</span>' +
+										'<span class="ps2">' +
+											'<span class="pdImg"><img src="//img30.360buyimg.com/test/s100x100_' + data[i].teamIcon + '" /></span>' +
+											'<span class="pdTit">' + data[i].teamName + '</span>' +
+											'<span class="pdTeam">' +
+												'<div class="pdtMem">' +
+													'<i></i>';
+							for (var j = 0, jLen = data[i].users.length; j < jLen; j++) {
+								if (data[i].users[j].status == 1 && isLogin) {
+									dataHtml += '<p><a href="person.html?id=' + data[i].users[j].id + '">' + data[i].users[j].name + '</a></p>';
+								}
+								else {
+									dataHtml += '<p><a href="javascript:;">' + data[i].users[j].name + '</a></p>';
+								}						
+							}
+							dataHtml += '</div>' +
+									'</span>' +
+								'</span>' +
+								'<span class="ps3">' + data[i].score + '</span>';
+							if (data[i].optimalTime && data[i].optimalTime.includes('-') && data[i].optimalTime.includes(':')) {
+								dataHtml += '<span class="ps4">' + data[i].optimalTime + '</span>';
+							}
+							else {
+								dataHtml += '<span class="ps4">--</span>';
+							}
+							dataHtml += '</li>';
+						}	
+					}
+				}
+				else {
+					for (var i = 0, len = data.length; i < len; i++) {
+						if (data[i].teamName) {
+							dataHtml += '<li class="pageList">' +
+											'<span class="pd">';
+							if (data[i].rankNo < 4) {
+								dataHtml += '<span class="pdNum pdRed">' + data[i].rankNo + '</span>';
+							}
+							else {
+								dataHtml += '<span class="pdNum">' + data[i].rankNo + '</span>';
+							}
+							var change = data[i].rankNo;
+							if (data[i].preRankNo) {
+								change = data[i].rankNo - data[i].preRankNo;
+							}
+							if (data[i].preRankNo && change > 0) {
+								dataHtml += '<span class="pdDown"><i>' + change + '</i></span>';
+							}
+							else if (data[i].preRankNo && change < 0) {
+								dataHtml += '<span class="pdUp"><i>' + (-1 * change) + '</i></span>';
+							}
+							/*else {
+								dataHtml += '<span class="pdNor">—</span>';
+							}*/
+							dataHtml += '</span>' +
+										'<span class="pd2">' +
+											'<span class="pdImg"><img src="//img30.360buyimg.com/test/s100x100_' + data[i].teamIcon + '" /></span>' +
+											'<span class="pdTit">' + data[i].teamName + '</span>' +
+											'<span class="pdTeam">' +
+												'<div class="pdtMem">' +
+													'<i></i>';
+							for (var j = 0, jLen = data[i].users.length; j < jLen; j++) {
+								if (data[i].users[j].status == 1 && isLogin) {
+									dataHtml += '<p><a href="person.html?id=' + data[i].users[j].id + '">' + data[i].users[j].name + '</a></p>';
+								}
+								else {
+									dataHtml += '<p><a href="javascript:;">' + data[i].users[j].name + '</a></p>';
+								}						
+							}
+							dataHtml += '</div>' +
+									'</span>' +
+								'</span>' +
+								'<span class="pd4">' + data[i].score + '<i>' + data[i].score + '</i></span>' +
+								'<span class="pd5">' + data[i].submitCount + '</span>' +
+								'<span class="pd6">' +
+									'<span>' + data[i].optimalTime + '</span>' +
+								'</span>' +
+								'<span class="pd7">' +
+									'<span>' + data[i].lastTime + '</span>' +
+								'</span>' +
+							'</li>';
+						}	
+					}
+				}
+				return dataHtml;
+			},
+			pageFun : function (i) {
+				var pageHtml = '';
+				if (i === 1) {
+					pageHtml = '<li class="pageNum active">' + i + '</li>';
+				}
+				else {
+					pageHtml = '<li class="pageNum">' + i + '</li>';
+				}			
+				return pageHtml;
+			}
+		});
+	}
+	$('section').on('click', '.rkList span', function () {
+		var index = $(this).index(),
+			index2 = $(this).parents('.ranking').index(),
+			tabId = $('.select').data('tabid'),
+			topic = $(this).data('topic'),
+			tp = $(this).data('type');
+		var val = $(this).parents('.ranking').find('.timeR').eq(index).val();
+		$(this).addClass('rkAct');
+		$(this).siblings('span').removeClass('rkAct');
+		$('.ranking').find('.rkc').css('display', 'none').find('.pageTit').css('display', 'block').next('.pagePar').css('display', 'none');
+		$('.ranking').eq(index2).find('.rkc').eq(index).css('display', 'block');
+		//全部时间
+		setAjax("/comp/weeks", {"comp" : oId, "tab" : tabId, "topic" : topic, "type" : tp, "t" : new Date().getTime()}, function (data) {
+			if (data.code == 200) {
+				//最终排名前10者为入围名单
+				if (data.btn) {
+					$('.ranking').eq(index2).find('.rkcEnd').eq(index).css('display', 'inline-block');
+				}
+				var str = '<option value="0">全部时间</option>';
+				data.data.map(function (item, i) {
+					str += '<option value="' + item.no + '">' + item.name + '</option>';
+				});
+				$('.ranking').eq(index2).find('.timeR').eq(index).html(str);
+			}
+		});
+		setPage(index, index2, tabId, tp, 0, topic);
+	});
+	//排行的全部时间
+	$('section').on('change', '.timeR', function () {
+		var val = $(this).val();
+		var index2 = $(this).parents('.ranking').index(),
+			index = $(this).parents('.ranking').find('.rkAct').index(),
+			tabId = $('.select').data('tabid'),
+			topic = $(this).parents('.ranking').find('.rkAct').data('topic'),
+			tp = $(this).parents('.ranking').find('.rkAct').data('type');
+		$('.ranking').eq(index2).find('.rkAct').data('date', val);
+		if (val != '0') {
+			$(this).parents('.rkc').find('.pagePar').css('display', 'block');
+			$(this).parents('.rkc').find('.pageTit').css('display', 'none');
+		}
+		else {
+			$(this).parents('.rkc').find('.pagePar').css('display', 'none');
+			$(this).parents('.rkc').find('.pageTit').css('display', 'block');
+		}
+		setPage(index, index2, tabId, tp, val, topic);
+	});
+	//排行榜的
+	$('section').on('mouseover', '.pdTeam', function () {
+		var height = $(this).find('.pdtMem').outerHeight();
+		$(this).find('.pdtMem').css('top', (- (height / 2 - 8)) + 'px');
+	});
+	//查看队伍下的队伍状态切换
+	$('section').on('change', '.tmList', function () {
+		var val = $(this).val();
+		checkTeam(val);
+	});
+	//查看队伍下的搜索队伍名称
+	$('section').on('click', '.tmSearch i', function () {
+		var val = $(this).prev('input').val(),
+			re = /^[\u0391-\uFFE5A-Za-z\d]+$/,
+			status = $('.tmList').val();
+		if (val && re.test(val)) {
+			val = encodeURIComponent(val);
+			checkTeam(status, val);
+		}
+		else {
+			$(this).parent('.tmSearch').next('.slgW').css('display', 'inline-block');
+		}
+	});
+	$('.tmSearch').on('focus', 'input', function () {
+		$(this).parent('.tmSearch').next('.slgW').css('display', 'none');
+	});
+	//查看队伍下的加入队伍
+	$('section').on('click', '.teamAdd', function () {
+		var team = $(this).data('teamid');
+		$('.application').data('team', team);
+		$('.mark, .application').css('display', 'block');
+	});
+	//查看队伍下的发送申请
+	$('.application').on('click', '.abSend', function () {
+		$('.mark, .application').css('display', 'none');
+		var team = $('.application').data('team');
+		setAjax("/team/join", {"comp" : oId, "team" : team, "t" : new Date().getTime()}, function (data) {
+			if (data.code == 200) {
+				$('.mark').css('display', 'block');
+				$('.success').css('display', 'block').find('.sCont').html(data.message);
+			}
+			else {
+				$('.mark').css('display', 'block');
+				$('.fail').css('display', 'block').find('.fCont').html(data.message);
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .success, .fail').css('display', 'none');
+				clearTimeout(timer);
+			}, 1500);
+		});
+	});
+	//查看队伍下的关闭申请
+	$('.application').on('click', '.appClose, .abCancel', function () {
+		$('.mark, .application').css('display', 'none');
+	});
+	//赛题切换
+	$('.topic').on('click', 'li', function () {
+		var index = $(this).index(),
+			topic = $(this).data('topic'),
+			season = $(this).data('season');
+		var index2 = $('.tpSend').eq(index).find('.tptAct').index(),
+			type = $('.tpSend').eq(index).find('.tptAct').data('type');
+		$(this).addClass('tpAct');
+		$(this).siblings('li').removeClass('tpAct');
+		$('.tpSend').css('display', 'none');
+		$('.tpSend').eq(index).css('display', 'block');
+		$('.tplTit').eq(index).html('提交记录');
+		subResult(index, index2, topic, season, type);
+	});
+	//赛题提交初始化
+	function subFile(index, index2, topic, season, des, type, i) {
+		var options = {
+			url: inner + '/topic/answer',
+			type: 'post',
+			data: {"comp" : oId, "topic" : topic, "season" : season, "des" : des, "t" : new Date().getTime()},
+			dataType: 'json',
+			success: function (data) {
+				$('.loading-mask').css('display', 'none');
+				if (data.code === 200) {
+					$('.mark').css('display', 'block');
+					$('.success').css('display', 'block');
+					$('.fileText').eq(index).val('');
+					$('.workDes').eq(index).val('');
+					$('.fmsDes').eq(index).find('i').html(data.data);
+					$('.file').eq(index).remove();
+					$('.uploadForm').eq(index).prepend('<input class="file" type="file" name="file" accept=".csv,.zip" />');
+					if (data.data <= 0) {
+						$('.fmsRun').eq(index).addClass('fmsEnd').removeClass('fmsRun');
+					}
+					var timerS = setTimeout(function () {
+						$('.mark, .success, .fail, .fReal').css('display', 'none');
+						subResult(index, index2, topic, season, type);
+						clearTimeout(timerS);				
+					}, 1000);
+				}
+				else if (data.code === 3) {//未实名认证
+					var detailUrl = encodeURIComponent('center.html?tab=auth');
+                    var retUrl = encodeURIComponent(location.protocol + '//' + location.host + '/user/authSuccess?retUrl=' + detailUrl);
+                    var rUrl = '//authpay.jd.com/auth/toAuthPage?source=412&directReturnUrl=' + retUrl;
+                    $('.fReal a').attr('href', rUrl);
+					$('.fReal, .mark').css('display', 'block');
+					$('.fail').css('display', 'block').find('.fCont').html(data.message);
+					var timerR = setTimeout(function () {
+						$('.mark, .success, .fail, .fReal').css('display', 'none');
+						clearTimeout(timerR);				
+					}, 3000);
+				}
+				else {
+					$('.mark').css('display', 'block');
+					$('.fail').css('display', 'block').find('.fCont').html(data.message);
+					var timerF = setTimeout(function () {
+						$('.mark, .success, .fail, .fReal').css('display', 'none');
+						clearTimeout(timerF);				
+					}, 1000);
+				}
+				
+			},
+			error : function () {
+				i--;
+				if (i > 0) {
+					subFile(index, index2, topic, season, des, type, i);
+				}
+				else {
+					window.location.reload();
+				}
+			}
+		};
+		// ajaxForm
+		$(".uploadForm").eq(index).ajaxForm(options);
+		$(".uploadForm").eq(index).ajaxSubmit(options);
+	}
+	//触发选择文件按钮
+	$('.message').on('click', '.upload', function () {
+		$(this).parents('.tpSend').find('.fileW').css('display', 'none');
+		$(this).parent('form').find('.file').click();
+	});
+	//提交结果
+	$('.message').on('click', '.fmsRun', function () {
+		var index = $('.tpAct').index(),
+			val = $(this).parents('.tpSend').find('.fileText').val(),
+			size = 0,
+			des = $(this).parents('.tpSend').find('.workDes').val(),
+			re = /^[\u0391-\uFFE5A-Za-z\d\s]+$/,
+			re2 = /\.(csv|zip)$/gi,
+			re3 = /^\s+$/g;
+		if ($(this).parents('.tpSend').find('.file')[0].files[0]) {
+			size = $(this).parents('.tpSend').find('.file')[0].files[0].size;
+		}
+		if (teamType === 1) {
+			re2 = /.zip$/gi;
+			if (size >= 20971520) {
+				$(this).parents('.tpSend').find('.fileW').html('上传文件最大20M').css('display', 'block');
+				return false;
+			}
+		}
+		else {
+			re2.lastIndex = 0;
+			if (re2.test(val)) {
+				if (size >= 5242880 && val.indexOf('.csv') != -1) {
+					$(this).parents('.tpSend').find('.fileW').html('上传csv文件最大5M').css('display', 'block');
+					return false;
+				}
+				else if (size >= 5242880 && val.indexOf('.zip') != -1) {
+					$(this).parents('.tpSend').find('.fileW').html('上传zip文件最大5M').css('display', 'block');
+					return false;
+				}
+			}
+			
+		}
+		if (size <= 0) {
+			$(this).parents('.tpSend').find('.fileW').html('上传文件不能为空').css('display', 'block');
+			return false;
+		}
+		if (teamType === 1) {
+			re2.lastIndex = 0;
+			if (!re2.test(val)) {
+				$(this).parents('.tpSend').find('.fileW').html('文件格式错误，请上传zip格式文件').css('display', 'block');
+				return false;
+			}
+		}
+		else {
+			re2.lastIndex = 0;
+			if (!re2.test(val)) {
+				$(this).parents('.tpSend').find('.fileW').html('文件格式错误，请上传csv或zip格式文件').css('display', 'block');
+				return false;
+			}
+		}		
+		if (!re.test(des) || re3.test(des)) {
+			$(this).parents('.tpSend').find('.wdCheck').css('display', 'block');
+			return false;
+		}
+		var index2 = $(this).parents('.tpSend').find('.tptAct').index(),
+			topic = $('.tpAct').data('topic'),
+			season = $('.tpAct').data('season'),
+			type = $(this).parents('.tpSend').find('.tptAct').data('type');
+		$('.loading-mask').css('display', 'block');
+		subFile(index, index2, topic, season, des, type, 3);
+	});
+	$('.message').on('focus', '.workDes', function () {
+		$(this).next('.wdCheck').css('display', 'none');
+	});
+	$('.message').on('change', '.file', function () {
+		$(this).parent('form').find('.fileText').val($(this).val());
+	});
+	//我的提交&&队友提交记录
+	$('.message').on('click', '.tpType li', function () {
+		var index = $(this).index(),
+			type = $(this).data('type');
+		$(this).addClass('tptAct');
+		$(this).siblings('li').removeClass('tptAct');
+		$(this).parents('.tpSend').find('.submitR').css('display', 'none');
+		$(this).parents('.tpSend').find('.submitR').eq(index).css('display', 'block');
+		var ind = $('.tpAct').index(),
+			topic = $('.tpAct').data('topic'),
+			season = $('.tpAct').data('season');
+		subResult(ind, index, topic, season, type);
+	});
+	//组建队伍
+	$('.sgtmC').on('click', function () {
+		$('.mark, .creTeam').css('display', 'block');
+	});
+	$('.creCan, .creClose').on('click', function () {
+		$('.mark, .creTeam, .slgW').css('display', 'none');
+		$('.cretInp input').val('');
+	});
+	$('.cretInp').on('focus', 'input', function () {
+		$('.creTeam .slgW').css('display', 'none');
+	});
+	$('.creSure').on('click', function () {
+		var str = $('.cretInp input').val(),
+			re = /^[\u0391-\uFFE5A-Za-z\d_]+$/;
+		if (str && re.test(str)) {
+			$('.creTeam').css('display', 'none');
+			$('.cretInp input').val('');
+			str = encodeURIComponent(str);
+			setAjax("/team/create", {"comp" : oId, "name" : str, "t" : new Date().getTime()}, function (data) {
+				if (data.code === 200) {
+					$('.success').css('display', 'block').find('.sCont').html(data.message);
+					$('.myteam').click();
+				}
+				else {
+					$('.fail').css('display', 'block').find('.fCont').html(data.message);
+				}
+				var timer = setTimeout(function () {
+					$('.mark, .success, .fail').css('display', 'none');
+					clearTimeout(timer);
+					if (data.code === 200) {
+						$('.myteam').click();
+					}
+				}, 1000);
+			});
+		}
+		else {
+			$('.creTeam .slgW').css('display', 'block').html('只支持中文英文数字下划线且不能为空！');
+		}
+	});
+	//加入已有队伍
+	$('.sgtmJ').on('click', function () {
+		$('.seeTeam').click();
+	});
+	//组队后个人
+	//退出队伍
+	$('.person').on('click', '.tmlbO', function () {
+		var team = $(this).data('team');
+		$('.mark').css('display', 'block');
+		$('.quitTeam').data('team', team).css('display', 'block');
+	});
+	$('.quitSure').on('click', function () {
+		var team = $('.quitTeam').data('team');
+		setAjax("/team/quit", {"comp" : oId, "team" : team, "t" : new Date().getTime()}, function (data) {
+			$('.quitTeam').css('display', 'none');
+			if (data.code === 200) {
+				$('.success').css('display', 'block').find('.sCont').html(data.message);
+			}
+			else {				
+				$('.fail').css('display', 'block').find('.fCont').html(data.message);
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .success, .fail').css('display', 'none');
+				clearTimeout(timer);
+				if (data.code === 200) {
+					$('.myteam').click();
+				}
+			}, 1000);
+		});
+	});
+	$('.quitCancel, .quitClose').on('click', function () {
+		$('.mark, .quitTeam').css('display', 'none');
+	});
+	//组队后队长
+	//解散队伍
+	$('.tmmDe').on('click', function () {
+		var team = $(this).data('team');
+		$('.mark').css('display', 'block');
+		$('.delTeam').data('team', team).css('display', 'block');
+	});
+	$('.delSure').on('click', function () {
+		var team = $('.delTeam').data('team');
+		setAjax("/team/dismiss", {"comp" : oId, "team" : team, "t" : new Date().getTime()}, function (data) {
+			$('.delTeam').css('display', 'none');
+			if (data.code === 200) {
+				$('.success').css('display', 'block').find('.sCont').html(data.message);
+			}
+			else {				
+				$('.fail').css('display', 'block').find('.fCont').html(data.message);
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .success, .fail').css('display', 'none');
+				clearTimeout(timer);
+				if (data.code === 200) {
+					$('.myteam').click();
+				}
+			}, 1000);
+		});
+	});
+	$('.delCancel, .delClose').on('click', function () {
+		$('.mark, .delTeam').css('display', 'none');
+	});
+	//设置为队长
+	$('.caption').on('click', '.tmlbSet', function () {
+		var team = $(this).data('team'),
+			user = $(this).data('user');
+		$('.mark').css('display', 'block');
+		$('.setCaption').data('team', team).data('user', user).css('display', 'block');
+	});
+	$('.setSure').on('click', function () {
+		var team = $('.setCaption').data('team'),
+			user = $('.setCaption').data('user');
+		setAjax("/team/asleader", {"comp" : oId, "team" : team, "user" : user, "t" : new Date().getTime()}, function (data) {
+			$('.setCaption').css('display', 'none');
+			if (data.code === 200) {
+				$('.success').css('display', 'block').find('.sCont').html(data.message);
+			}
+			else {				
+				$('.fail').css('display', 'block').find('.fCont').html(data.message);
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .success, .fail').css('display', 'none');
+				clearTimeout(timer);
+				if (data.code === 200) {
+					$('.myteam').click();
+				}
+			}, 1000);
+		});
+	});
+	$('.setCancel, .setClose').on('click', function () {
+		$('.mark, .setCaption').css('display', 'none');
+	});
+	//移除队员
+	$('.caption').on('click', '.tmlbRe', function () {
+		var team = $(this).data('team'),
+			user = $(this).data('user');
+		$('.mark').css('display', 'block');
+		$('.removeTeam').data('team', team).data('user', user).css('display', 'block');
+	});
+	$('.removeSure').on('click', function () {
+		var team = $('.removeTeam').data('team'),
+			user = $('.removeTeam').data('user');
+		setAjax("/team/member/remove", {"comp" : oId, "team" : team, "user" : user, "t" : new Date().getTime()}, function (data) {
+			$('.removeTeam').css('display', 'none');
+			if (data.code === 200) {
+				$('.success').css('display', 'block').find('.sCont').html(data.message);
+			}
+			else {				
+				$('.fail').css('display', 'block').find('.fCont').html(data.message);
+			}
+			var timer = setTimeout(function () {
+				$('.mark, .success, .fail').css('display', 'none');
+				clearTimeout(timer);
+				if (data.code === 200) {
+					$('.myteam').click();
+				}
+			}, 1000);
+		});
+	});
+	$('.removeCancel, .removeClose').on('click', function () {
+		$('.mark, .removeTeam').css('display', 'none');
+	});
+	//邀请队员
+	$('section').on('click', '.tmlAdd', function () {
+		var team = $(this).data('team');
+		$('.mark').css('display', 'block');
+		$('.invTeam').data('team', team).css('display', 'block');
+	});
+	$('.invCan, .invClose').on('click', function () {
+		$('.mark, .invTeam').css('display', 'none');
+		$('.invInp input').val('');
+	});
+	$('.invInp').on('focus', 'input', function () {
+		$('.invTeam .slgW').css('display', 'none');
+	});
+	$('.invSure').on('click', function () {
+		var str = $('.invInp input').val(),
+			re = /^[\u0391-\uFFE5A-Za-z\d_]+$/,
+			team = $('.invTeam').data('team');
+		if (str && re.test(str)) {
+			str = encodeURIComponent(str);
+			setAjax("/team/invite", {"comp" : oId, "team" : team, "user" : str, "t" : new Date().getTime()}, function (data) {
+				$('.invTeam').css('display', 'none');
+				if (data.code === 200) {
+					$('.success').css('display', 'block').find('.sCont').html(data.message);
+				}
+				else {
+					$('.fail').css('display', 'block').find('.fCont').html(data.message);
+				}
+				var timer = setTimeout(function () {
+					$('.mark, .success, .fail').css('display', 'none');
+					clearTimeout(timer);
+					/*if (data.code === 200) {
+						$('.myteam').click();
+					}*/
+				}, 1000);
+			});
+		}
+		else {
+			$('.invTeam .slgW').css('display', 'block').html('只支持中文英文数字下划线且不能为空！');
+		}
+	});
+	//某些接口错误 重新刷新页面
+	$('.reClose').on('click', function () {
+		$('.mark, .reload').css('display', 'none');
+	});
+	$('.reSend').on('click', function () {
+		$('.mark, .reload').css('display', 'none');
+		window.location.reload();
+	});
+	//消息展示一次
+	$('.userMess').on('click', '.userMsg', function () {
+		$(this).find('i').css('display', 'none');
+		var time = setTimeout(function () {
+			clearTimeout(time);
+			window.open('center.html', '_self');
+		}, 0);		
+	});
+	//返回顶部
+	$(window).on('scroll', function () {
+		var scroll = document.documentElement.scrollTop || document.body.scrollTop;
+		if (scroll > 200) {
+			$('.rightIcon').fadeIn();
+		}
+		else {
+			$('.rightIcon').fadeOut();
+		}
+	});
+	$('.rTop').on('click', function () {
+		$('body,html').animate({"scrollTop": 0 }, 500);
+	});
+	
+	$.ajax({
+        "type" : "get",
+        "url" : "//sso.jd.com/setCookie?t=sso.jcloud.com",
+        "dataType" : "jsonp",
+        "timeout" : 1000
+    });
+    $.ajax({
+        "type" : "get",
+        "url" : "//sso.jd.com/setCookie?t=sso.jdcloud.com",
+        "dataType" : "jsonp",
+        "timeout" : 1000
+    });
+
+    //去实名认证
+    $('.inSet').on('click', function () {
+        $('.mark, .toInvite').css('display', 'none');
+    });
+    $('.inClose').on('click', function () {
+        $('.mark, .toInvite').css('display', 'none');
+    });
+    //  显示邀请
+    function Invite() {
+
+        var _invite = (function() {
+            function InviteBtn() {
+                // 登录
+                var isLogin = false;
+                // 进行中可以组队
+                var isIng = false;
+                // 已经报名
+                var hasEntered = false;
+                // 比赛开通了邀请功能
+                var hasOpened = false;
+                // 是否已经显示
+                var hasShowed = false;
+
+                function show() {
+                    console.log(isLogin, isIng,hasEntered,hasOpened);
+                    if(isIng
+                        && isLogin
+                        && hasEntered
+                        && hasOpened
+                        && !hasShowed)  {
+                        $(".inviteP").show();
+                        hasShowed = true;
+
+                        var token = getCookie("3AB9D23") + "jdc" + getStr("id");
+                        var url =  String(window.document.location.href) + "&token="+token;
+                        var tn = getCookie(token) | 0;
+
+                        $('.friendN').html(tn);
+                        var btn = $('#invite-btn');
+                        btn.attr("data-clipboard-text",url);
+                        var clipboard = new Clipboard("#invite-btn");
+
+                        clipboard.on('success', function(e) {
+                            $('.mark, .toInvite').css('display', 'block');
+                            $('.inTit').html("已经复制分享链接，请粘贴分享给好友噢~");
+                            e.clearSelection();
+                        });
+
+                        clipboard.on('error', function(e) {
+                            $('.mark, .toInvite').css('display', 'block');
+                            $('.inTit').html("请复制 "+url+" 然后分享给好友噢~");
+                            e.clearSelection();
+                        });
+                    }
+                }
+
+                return {
+                    setLogin: function(login) {
+                        isLogin = login;
+                        show();
+                    },
+                    setIng: function(ing) {
+                        isIng = ing;
+                        show();
+                    },
+                    setEnter:function (entered) {
+                        hasEntered = entered;
+                        show();
+                    },
+                    setOpen:function (opened) {
+                        hasOpened = opened;
+                        show();
+                    }
+                };
+            }
+            return InviteBtn();
+        })();
+
+        Invite = function () {
+            return _invite;
+        };
+
+        return _invite;
+    }
+    //去实名
+    $('.comSet').on('click', function () {
+    	$('.mark, .toComplete').css('display', 'none');
+    	window.location.href = window.location.origin + '/user/complete';
+    });
+});

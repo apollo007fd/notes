@@ -1,0 +1,22 @@
+@font-face {
+	font-family: 'imagine';
+	src: url('../font/imagine/imagine-font.eot');
+	src: url('../font/imagine/imagine-font.eot?#iefix') format('embedded-opentype'),
+		 url('../font/imagine/imagine-font.woff') format('woff'),
+		 url('../font/imagine/imagine-font.woff2') format('woff2'),
+		 url('../font/imagine/imagine-font.ttf') format('truetype'),
+		 url('../font/imagine/imagine-font.svg#NeuesBauenDemo') format('svg');
+	font-weight: normal;
+	font-style: normal;
+} 
+@font-face {
+	font-family: 'din';
+	src: url('../font/din/din-regular.eot');
+	src: url('../font/din/din-regular.eot?#iefix') format('embedded-opentype'),
+		 url('../font/din/din-regular.woff') format('woff'),
+		 url('../font/din/din-regular.woff2') format('woff2'),
+		 url('../font/din/din-regular.ttf') format('truetype'),
+		 url('../font/din/din-regular.svg#NeuesBauenDemo') format('svg');
+	font-weight: normal;
+	font-style: normal;
+} 

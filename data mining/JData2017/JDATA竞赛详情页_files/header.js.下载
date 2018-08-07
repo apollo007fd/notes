@@ -1,0 +1,151 @@
+//inner ajax接口连接配置 内部赛——'/inner' 外部赛——''
+var inner = '',
+	isLogin = false;
+$(function () {
+	var oUrl = window.location.href,
+		host = window.location.host;
+	var str = '<img src="../image/logo.png" />' +
+				'<nav>';
+
+	// 补全页用的
+	if(oUrl.indexOf('complete') != -1 || oUrl.indexOf('phomail') != -1) {
+		str += '<li class="headRed headAct"><a href="../index.html">首页</a></li>' +
+				'<li class="headRed"><a href="../html/list.html">竞赛</a></li>' +
+				'<li class="headRed"><a href="../html/knowledge.html">知识库</a></li>' +
+				'<li class="headList">排名与奖励' +
+					'<ul>' +
+						'<li><a href="../html/heroR.html">英雄榜</a></li>' +
+						'<li><a href="../html/gift.html">周边兑换</a></li>' +
+					'</ul>' +
+				'</li>' +
+				'<li class="headRed"><a target="_blank" href="https://zhaopin.jd.com/JD/web/index" clstag="pageclick|keycount|201801031|zhaopin">招聘</a></li>' +
+				'<li class="headRed"><a target="_blank" href="http://group.jd.com/circle/all-circle/20000811.htm" clstag="pageclick|keycount|201801031|shequ">社区</a></li>' +
+				'<li class="headRed"><a href="../html/help.html">帮助中心</a></li>';
+	}
+	else if (oUrl.indexOf('index') !== -1 || oUrl.indexOf('html') === -1) {
+		str += '<li class="headRed headAct"><a href="index.html">首页</a></li>' +
+				'<li class="headRed"><a href="html/list.html">竞赛</a></li>' +
+				'<li class="headRed"><a href="html/knowledge.html">知识库</a></li>' +
+				'<li class="headList">排名与奖励' +
+					'<ul>' +
+						'<li><a href="html/heroR.html">英雄榜</a></li>' +
+						'<li><a href="html/gift.html">周边兑换</a></li>' +
+					'</ul>' +
+				'</li>' +
+				'<li class="headRed"><a target="_blank" href="https://zhaopin.jd.com/JD/web/index" clstag="pageclick|keycount|201801031|zhaopin">招聘</a></li>' +
+				'<li class="headRed"><a target="_blank" href="http://group.jd.com/circle/all-circle/20000811.htm" clstag="pageclick|keycount|201801031|shequ">社区</a></li>' +
+				'<li class="headRed"><a href="html/help.html">帮助中心</a></li>';
+	}
+	else {
+		str += '<li class="headRed"><a href="../index.html">首页</a></li>';
+		if (oUrl.indexOf('list.html') !== -1) {
+			str += '<li class="headRed headAct"><a href="list.html">竞赛</a></li>';
+		}
+		else {
+			str += '<li class="headRed"><a href="list.html">竞赛</a></li>';
+		}
+		if (oUrl.indexOf('knowledge.html') !== -1) {
+			str += '<li class="headRed headAct"><a href="knowledge.html">知识库</a></li>';
+		}
+		else {
+			str += '<li class="headRed"><a href="knowledge.html">知识库</a></li>';
+		}
+		if (oUrl.indexOf('heroR.html') !== -1 || oUrl.indexOf('gift.html') !== -1) {
+			str += '<li class="headList headAct">排名与奖励';
+		}
+		else {
+			str += '<li class="headList">排名与奖励';
+		}
+		str += '<ul>' +
+					'<li><a href="heroR.html">英雄榜</a></li>' +
+					'<li><a href="gift.html">周边兑换</a></li>' +
+				'</ul>' +
+			'</li>' +
+			'<li class="headRed"><a target="_blank" href="https://zhaopin.jd.com/JD/web/index" clstag="pageclick|keycount|201801031|zhaopin">招聘</a></li>' +
+			'<li class="headRed"><a target="_blank" href="http://group.jd.com/circle/all-circle/20000811.htm" clstag="pageclick|keycount|201801031|shequ">社区</a></li>';
+		if (oUrl.indexOf('help.html') !== -1) {
+			str += '<li class="headRed headAct"><a href="help.html">帮助中心</a></li>';
+		}
+		else {
+			str += '<li class="headRed"><a href="help.html">帮助中心</a></li>';
+		}
+	}
+	str += '</nav>' +
+		'<div class="loginM">' +
+			'<a class="apply" href="javascript:;" style="display: none;">我要举办比赛</a>' +
+			getSwitchLanguageHtml() + 
+			'<a class="login" href="https://passport.jd.com/uc/login?ReturnUrl=http%3A%2F%2Ftest.jdata.jd.com">登录</a>' +
+			'<a class="register" href="https://reg.jd.com/reg/person?ReturnUrl=http%3A%2F%2Ftest.jdata.jd.com">注册</a>' +
+			'<span class="userMess"></span>' +
+		'</div>';
+	$('.headT').html(str);
+	//登录信息
+	$('.login').attr('href', 'https://passport.jd.com/uc/login?ReturnUrl=' + encodeURIComponent(oUrl));
+	$('.register').attr('href', 'https://reg.jd.com/reg/person?ReturnUrl=' + encodeURIComponent(oUrl));
+	//检测是否登录&&退出登录
+	$.ajax({
+		"type" : "get",
+		"url" : "//passport.jd.com/loginservice.aspx?method=Login&callback=?",
+		"dataType" : "jsonp",
+		"timeout" : 1000,
+		"success" : function (data) {
+			if (data.Identity.IsAuthenticated) {
+				isLogin = true;
+				var name = data.Identity.Unick;
+				$.ajax({
+					"type" : "get",
+					"url" : inner + '/user/name',
+					"dataType" : "json",
+					"timeout" : 1000,
+					"success" : function (data) {
+						if (data.code === 200) {
+							if (data.data.name) {
+								$('.userMess').html('<a class="userMsg" href="javascript:;">' + data.data.name + '<i>' + data.data.msgCount + '</i></a> <a class="loginOut" href="javascript:;">退出</a>').css('display', 'inline-block');
+							}
+							else {
+								$('.userMess').html('<a class="userMsg" href="javascript:;">' + name + '<i>' + data.data.msgCount + '</i></a> <a class="loginOut" href="javascript:;">退出</a>').css('display', 'inline-block');
+							}
+							if (data.data.msgCount !== 0 && data.data.msgCount) {
+								$('.userMess i').css('display', 'block');
+							}
+						}
+						else {
+							$('.userMess').html('<a class="userMsg" href="javascript:;">' + name + '<i>0</i></a> <a class="loginOut" href="javascript:;">退出</a>').css('display', 'inline-block');
+						}
+						$('.login, .register').css('display', 'none');
+						$('.loginOut').on('click', function () {
+							$.getJSON("//sso.jd.com/exit?callback=?", function (data) {
+								window.location.href = oUrl; // 此处自定义逻辑
+							});
+						});
+					}
+				});
+			}
+			else {
+				isLogin = false;
+				$('.join').addClass('out').removeClass('join').html('未登录');
+			}
+		}
+	});
+});
+
+
+/**
+ * 切换中英文
+ * @returns
+ */
+function getSwitchLanguageHtml() {
+	// 仅首页
+	if (location.pathname == null || location.pathname == '/' || location.pathname == '/en/' || location.pathname.indexOf('index.html') != -1) {
+		// now zh
+		if(location.host.indexOf('joybuy') == -1) {
+			return '<a href="' + location.href.replace('.jd.com', '.joybuy.com/en') + '">EN</a>';
+		}
+		// now en
+		else {
+			return '<a href="' + location.href.replace('.joybuy.com/en', '.joybuy.com').replace('.joybuy.com', '.jd.com') + '">中</a>';
+		}
+	}
+	
+	return '';
+}

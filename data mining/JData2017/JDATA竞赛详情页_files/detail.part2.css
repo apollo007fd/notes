@@ -1,0 +1,379 @@
+/* 审核资料 */
+.material-container form input:first-of-type {
+    width: 377px;
+    height: 36px;
+    padding: 0;
+    line-height: 36px;
+    border: 1px solid #e1e1e1;
+    padding-left: 10px;
+}
+.material-container form input:last-of-type {
+    width: 120px;
+    position: absolute;
+    height: 36px;
+    opacity: 0;
+}
+.material-container form button {
+    width: 120px;
+    height: 36px;
+    background-color: #ffffff;
+    border: solid 1px #999999;
+    cursor: pointer;
+    outline: none;
+}
+.material-container form .declare {
+    color: #f2483d;
+    margin-left: 5px;
+}
+.err {
+    color: #f2483d;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+/* 头像 */
+.avatar-dlg {
+	width: 100%;
+	height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+	position: fixed;
+	top: 0;
+	display: none;
+	z-index: 99999;
+}
+.dlg-container {
+    border-radius: 7px;
+	position: absolute;
+	width: 520px;
+	height: 500px;
+	top: 50%;
+	left: 50%;
+	margin-left: -260px;
+	margin-top: -250px;
+	font-size: 16px;
+    box-shadow: 0 4px 6px rgba(100,100,100,0.4);
+    background-color: #fff;
+}
+.dlg-header, .dlg-footer {
+    background-color: #f5f5f5;
+}
+.dlg-header {
+    border-bottom: 1px solid #ddd;
+    height: 49px;
+    font-size: 16px;
+    color: #666;
+    font-weight: bold;
+}
+.dlg-header span {
+	line-height: 50px;
+}
+.dlg-header span:first-of-type {
+	float: left;
+	margin-left: 10px;
+}
+.close-avatar {
+	float: right;
+	margin-right: 15px;
+	cursor: pointer;
+}
+.dlg-body {
+	height: 400px;
+}
+.dlg-left {
+    width: 320px;
+    height: 320px;
+    padding: 20px 10px;
+    display: inline-block
+}
+.dlg-right {
+    width: 166px;
+    height: 320px;
+    display: inline-block;
+    position: absolute;
+    background-color: #f5f5f5;
+    margin: 20px 10px 50px 3px;
+    border-radius: 5px;
+}
+.dlg-right p:first-of-type {
+    margin-top: 45px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+.dlg-right p:last-of-type {
+    text-align: left;
+    color: gray;
+    margin: 18px;
+    font-size: 12px;
+}
+.dlg-right>div {
+    width: 150px;
+    height: 150px;
+    text-align: center;
+    margin: 10px 8px;
+}
+.avatar-crop {
+    height: 320px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+.dlg-footer {
+    text-align: center;
+	bottom: 0;
+	height: 50px;
+	border-top: 1px solid #ddd;
+}
+.dlg-footer span {
+	width: 139px;
+	border: solid 1px #ddd;
+	text-align: center;
+	line-height: 49px;
+    padding: 4px 34px;
+	cursor: pointer;
+}
+.avatar-crop>img {
+    display: none; 
+    visibility: hidden; 
+    width:310px;
+}
+.chose-avatar {
+    width: 70px;
+    color: #f2483d;
+    border: solid 1px #f2483d;
+    text-align: center;
+    line-height: 60px;
+    cursor: pointer;
+    padding: 5px 30px;
+    margin-top: 6px;
+    cursor: pointer;
+}
+.chose-avatar input {
+    position: absolute;
+    width: 85px;
+    height: 32px;
+    padding: 0 20px;
+    left: 0;
+    margin-top: 12px;
+    margin-left: 10px;
+    opacity: 0;
+    cursor: pointer;
+}
+.dlg-footer .save-avatar {
+    background-color: #f2483d;
+    border: 1px solid #f2483d;
+    color: #fff;
+}
+.dlg-footer .cancel-avatar {
+    border: 1px solid #999;
+    background-color: #fff;
+}
+.preview-panel {
+    border-radius: 70px;
+    display: inline-block;
+    width: 130px;
+    height: 130px;
+    overflow: hidden;
+}
+.preview-panel img {
+    width: 130px;
+    height: 130px;
+}
+.jcrop-hline.bottom {
+    border-bottom: none;
+}
+
+/* 转圈的joy */
+.loading-mask{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(0,0,0,0);
+    display: none;
+    z-index: 9;
+}
+.loading-mask>div{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 300px;
+    line-height: 76px;
+    margin-left: -150px;
+    margin-top: -38px;
+    text-align: center;
+}
+
+/* 队伍需要技能 */
+.team-skill {
+    position: relative;
+    top: 0;
+    width: 400px;
+    height: 36px;
+    background: #f5f5f5;
+    border: 1px solid #CECBCE;
+    line-height: 36px;
+    display: inline-block;
+    padding-left: 10px;
+    vertical-align: middle;
+    font-size: 12px;
+}
+.team-skill>b {
+    background-repeat: no-repeat;
+    display: block;
+    position: absolute;
+    top: 11px;
+    right: 4px;
+    width: 17px;
+    height: 17px;
+    background: url(//img12.360buyimg.com/uba/jfs/t4660/73/4024943067/1159/f1a90f68/59088392N8b6279bb.png) no-repeat 3px 5px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.team-skill>span {
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+    line-height: 30px;
+    width: 110px;
+    overflow: hidden; 
+    margin: 0 8px;
+    border-radius: 4px;
+    vertical-align: middle;
+    background-color: #FFF;
+}
+.team-skill sup {
+    color: #f2483d;
+    cursor: pointer;
+    float: right;
+    overflow: visible;
+    margin: -6px 8px 0 0;
+}
+/* 技能面板 */
+.skill-container * {
+	margin: 0;
+	padding: 0;
+}
+.skill-container {
+    z-index: 1;
+    border-radius: 5px;
+	position: absolute;
+	left: 166px;
+	width: 630px;
+	border: 1px solid #f7f7f7;
+	background-color: #FFF;
+	box-shadow: 8px 2px 20px rgba(29, 29, 29, 0.77);
+	-webkit-transition: top .25s ease;
+	transition: top .25s ease;
+	font: 12px/1.5 Microsoft YaHei,tahoma,arial,Hiragino Sans GB,\\5b8b\4f53,sans-serif;
+	font-style: normal;
+	font-family: iconfont;
+	color: #666;
+    display: none;
+}
+.skill-container .skill-item {
+	position: relative;
+	padding-left: 80px;
+}
+.skill-container .skill1 {
+	overflow: hidden;
+	position: absolute;
+	left: 0px;
+	top: 9px;
+	*top:8px: ;
+	width: 70px;
+	text-align: right;
+	font-weight: 700;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.skill-container .skill1 i {
+	margin-left: 5px;
+    font: 12px/1.5 Microsoft YaHei,tahoma,arial,Hiragino Sans GB,\\5b8b\4f53,sans-serif;
+}
+.skill-container .skill2 {
+	overflow: hidden;
+	*zoom:1: ;
+	padding: 6px 0;
+	border-top: 1px solid #eee;
+}
+.skill-container .skill2 span{
+	float: left;
+	margin: 4px 0;
+	padding: 0 10px;
+	height: 16px;
+	border-left: 1px solid #e0e0e0;
+	line-height: 16px;
+	white-space: nowrap;
+	color: #333;
+	cursor: pointer;
+}
+.skill-container .skill2 span.ban, .skill-container .skill2 span.ban:hover {
+    color: gray;
+    cursor: default;
+}
+.skill-container .skill2 span:hover {
+	color: #c81623;
+}
+.team-editor p span:nth-of-type(1), .team-editor>div>span:first-of-type {
+    width: 80px;
+    text-align: right;
+    color: #333;
+    margin-right: 10px;
+    display: inline-block;
+}
+/* TODO delete */
+/* .capECont {
+   display: block;
+} */
+.team-edit-container {
+    border-radius: 7px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -300px;
+    margin-left: -400px;
+    width: 800px;
+    height: 600px;
+    box-shadow: 0 0 12px 0 rgba(51, 51, 51, 0.1);
+    border: solid 1px #efefef;
+    background-color: #fff;
+}
+.team-edit-container .tvTit {
+    border-radius: 7px;
+}
+.jdata-download {
+    display: none;
+}
+
+.warn-success, .warn-fail {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    padding: 30px 20px;
+    margin-top: -65px;
+    margin-left: -130px;
+    background-color: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    z-index: 1010;
+    display: none;
+    width: 220px;
+    height: 70px;
+}
+.warn-sRight, .warn-fFault {
+    margin: 0 auto;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 15px;
+    background: url(../image/iconList.png) no-repeat;
+}
+.warn-sRight {
+    background-position: -186px -156px;
+}
+.warn-fFault {
+    background-position: -267px -156px;
+}

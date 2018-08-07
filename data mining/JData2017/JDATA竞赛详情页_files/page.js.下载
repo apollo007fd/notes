@@ -1,0 +1,218 @@
+;(function($,win,doc,unde){
+	$.fn.pageFun = function(options){
+		var defaults = {
+			pageDiv   : $(this).find(".pageDiv"),
+			pageDivLi : $(this).find(".pageDiv li"),
+			page      : $(this).find(".page"),
+			pageMenu  : $(this).find(".pageMenu"),
+			pageMenuLi: $(this).find(".pageDiv li"),
+			firstPage : $(this).find(".firstPage"),
+			prevPage  : $(this).find(".prevPage"),
+			pageNums   : $(this).find(".pageNum"),
+			nextPage  : $(this).find(".nextPage"),
+			pageObj   : $(this).find(".pageObj"),
+			pageObjLi : $(this).find(".pageObj li"),
+			lastPage  : $(this).find(".lastPage"),
+			notContent: $(this).find(".notContent"),
+			pageSize : 10,
+			pNum      : 1,
+			lastNum   : 0,
+			cacheNum  : 1,
+			min       : 0,
+			res       : null,
+			iBtn	  : true,
+			jsn : {"pageNum" : '', "pageSize" : ''}
+		};
+		var opts = $.extend({},defaults,options);
+/*{
+	code : 200,
+	datas: [{},{}],
+	totalNum : 230
+}*/
+		var Method = {
+			init : function(){
+				Method.getData(); /*请求接口获得数据*/
+				Method.handleEvent(); /*事件处理*/
+			},
+
+			getData : function(){
+				opts.jsn.pageNum = opts.cacheNum;
+				opts.jsn.pageSize = opts.pageSize;
+				$.ajax({
+					"type" : "get",
+					"url" : opts.interFace,
+					"data" : opts.jsn,
+					"dataType" : "json",
+					"timeout" : 2000,
+					"success" : function (data) {
+						if(data.code === 200){
+					    	opts.res = data.datas || [];
+					    	if (opts.res.length != 0) {
+					    		opts.page.css('display', 'block');
+					    		opts.notContent.addClass("hide");
+					    		opts.displayCount = opts.pageSize;
+					    		if (opts.cacheNum === 1) {
+					    			if (opts.iBtn) {
+					    				opts.pNum = Math.ceil(data.totalNum / opts.displayCount);
+					    				opts.pageObj.html('');
+							    		for (var i = 0; i < opts.pNum; i++) {
+				                        	opts.pageObj.append(opts.pageFun(i+1));
+				                        }
+										opts.iBtn = false;
+										Method.showPageindex(0, opts.maxPage, 0);
+			                    	}					    		
+			                        opts.firstPage.addClass("disabled");
+									opts.prevPage.addClass("disabled");                        
+						    	}
+						    	if(opts.cacheNum === opts.pNum){
+									opts.displayCount = opts.res.length;
+			                        opts.lastPage.addClass("disabled");
+									opts.nextPage.addClass("disabled");
+						    	}
+						    	/*for (var i = 0; i < opts.displayCount; i++) {
+		                            opts.pageDiv.append(opts.dataFun(opts.res[i]));
+		                        }*/
+		                        opts.pageDiv.html('');
+		                        opts.pageDiv.append(opts.dataFun(opts.res));
+							}
+					    	else {
+					    		opts.pageDiv.html('');
+								opts.notContent.removeClass("hide");
+								opts.page.css('display', 'none');
+							}
+	                	}
+	                	else if (data.code === 1) {
+	                		$('.mark, .reload').css('display', 'block');
+	                	}
+	                	else {
+							$('.fail').find('.fCont').html(data.message);
+							$('.mark, .fail').css('display', 'block');
+						}
+						var timer = setTimeout(function () {
+							$('.mark, .fail').css('display', 'none');
+							clearTimeout(timer);
+						}, 1000);
+					},
+					"error" : function () {
+						if (opts.record) {
+							opts.record--;
+							if (opts.record > 0) {
+								Method.getData();
+							}
+							else {
+								window.location.reload();
+							}
+						}
+					}
+				});
+			},
+			handleEvent : function(){
+				opts.pageObj.on("click", "li",function(){  /*点击页码切换*/
+					$(this).addClass("active");
+					//opts.pageDiv.empty();
+					$(this).siblings("li").removeClass("active");
+
+	                opts.cacheNum = parseInt($(this).text());
+	                if (opts.cacheNum === 1 && opts.pNum > 1) {
+	                	opts.lastPage.removeClass("disabled");
+						opts.nextPage.removeClass("disabled");
+	                }
+	                else if (opts.cacheNum === opts.pNum && opts.pNum > 1) {
+	                	opts.firstPage.removeClass("disabled");
+						opts.prevPage.removeClass("disabled");
+	                }
+	                else{
+						opts.firstPage.removeClass("disabled");
+						opts.prevPage.removeClass("disabled");
+						opts.lastPage.removeClass("disabled");
+						opts.nextPage.removeClass("disabled");
+					}
+	                Method.getData();
+					Method.showPageindex(0, opts.maxPage, $(this).text());
+					//Method.xhhtml($(this).text(),$(this).text()*opts.displayCount);
+				});
+				opts.prevPage.on("click",function(){ /*点击上页*/
+					if(opts.cacheNum === 1){
+						return;
+					}
+					opts.pageDiv.empty();
+					opts.cacheNum--;
+					opts.lastPage.removeClass("disabled");
+					opts.nextPage.removeClass("disabled");
+					opts.pageObj.find('li').eq(opts.cacheNum-1).addClass("active");
+					opts.pageObj.find('li').eq(opts.cacheNum-1).siblings("li").removeClass("active");
+					Method.getData();
+					//Method.xhhtml(opts.cacheNum,opts.cacheNum*opts.displayCount);
+					Method.showPageindex(0, opts.maxPage, opts.cacheNum);
+				});
+				opts.nextPage.on("click", function(){  /*点击下页*/
+					if(opts.cacheNum === opts.pNum){
+						return;
+					}
+					opts.pageDiv.empty();
+					opts.cacheNum++;
+					opts.pageObj.find('li').eq(opts.cacheNum-1).addClass("active");
+					opts.pageObj.find('li').eq(opts.cacheNum-1).siblings("li").removeClass("active");
+					opts.firstPage.removeClass("disabled");
+					opts.prevPage.removeClass("disabled");
+					Method.getData();
+					Method.showPageindex(0, opts.maxPage, opts.cacheNum);
+				});
+
+				opts.firstPage.on("click", function(){   /*点击首页*/
+					if (opts.cacheNum === 1) {
+						return ;
+					}
+					opts.pageDiv.empty();
+					opts.cacheNum = 1;
+					opts.lastPage.removeClass("disabled");
+					opts.nextPage.removeClass("disabled");
+					opts.pageObj.find('li').eq(0).addClass("active");
+					opts.pageObj.find('li').eq(0).siblings("li").removeClass("active");
+					Method.getData();
+					Method.showPageindex(0, opts.maxPage, 0);
+				});
+
+				opts.lastPage.on("click",function(){  /*点击尾页*/
+					if (opts.cacheNum === opts.pNum) {
+						return ;
+					}
+					opts.pageDiv.empty();
+					opts.cacheNum = opts.pNum;
+					opts.firstPage.removeClass("disabled");
+					opts.prevPage.removeClass("disabled");
+					opts.pageObj.find('li').eq(opts.pNum-1).addClass("active");
+					opts.pageObj.find('li').eq(opts.pNum-1).siblings("li").removeClass("active");
+					Method.getData();
+					Method.showPageindex(0, opts.maxPage, opts.pNum);
+				});
+
+			},
+			/*xhhtml : function(index, count){
+				for (var i = ((index-1)*opts.displayCount); i < count; i++) {
+                    opts.pageDiv.append(opts.dataFun(opts.res[i]));
+                }
+			},*/
+			showPageindex : function(min, max, index) {
+                if (index <= Math.ceil(max / 2)) {
+                    min = 0;
+                    max = max;
+                }
+                else if (opts.pNum - index < Math.ceil(max / 2)) {
+                    min = opts.pNum - max;
+                    max = opts.pNum ;
+                } 
+			 	else {
+                    min = Math.round(index - max / 2)-1;
+                    max = Math.round(Number(index) + Number(max / 2))-1;
+                }
+                opts.pageObj.find('li').hide();
+                for (var i = min; i < max; i++) {
+                    opts.pageObj.find('li').eq(i).show();
+                }
+            }
+		}
+
+		Method.init();
+	}
+})(jQuery,window,document,undefined)
