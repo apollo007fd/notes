@@ -13,7 +13,7 @@
 - 添加有新的特征的训练集/验证集/测试集1/测试集2
 
 ```python
-import pandas as pd
+import pandas as pd  #添加有新的特征
 import lightgbm as lgb
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
