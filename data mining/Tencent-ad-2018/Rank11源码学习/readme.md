@@ -1,3 +1,5 @@
+https://github.com/liupengsay/2018-Tencent-social-advertising-algorithm-contest/tree/master/%E5%84%BF%E9%A1%BB%E6%88%90%E5%90%8D%E9%85%92%E9%A1%BB%E9%86%89_v2
+
 ## 赛题介绍
 
 相似人群拓展(Lookalike)的工作机制是基于种子用户画像和社交关系链寻找出相似用户.
